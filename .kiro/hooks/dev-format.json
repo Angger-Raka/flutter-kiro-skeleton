@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Format Dart after writes",
+      "trigger": "PostToolUse",
+      "matcher": "write",
+      "action": {
+        "type": "command",
+        "command": "git ls-files -m -o --exclude-standard -- '*.dart' | xargs -r dart format"
+      },
+      "timeout": 60
+    }
+  ]
+}
