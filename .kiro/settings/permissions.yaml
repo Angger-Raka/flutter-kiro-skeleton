@@ -1,0 +1,7 @@
+rules:
+  - capability: shell
+    match: ["flutter *", "dart *", "mason *", "tool/kit.sh *", "git status*", "git diff*", "git log*", "git add *", "git commit *"]
+    effect: allow
+  - capability: shell
+    match: ["git push*", "rm -rf *", "sudo *"]
+    effect: ask

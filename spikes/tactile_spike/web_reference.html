@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tactile web reference</title>
+<style>
+/* Same recipes as tokens.md, plain CSS. Mirrors CardDemo (390x400) in lib/tactile.dart. */
+@font-face { font-family: Inter; font-weight: 500; src: url(assets/fonts/Inter-Medium.ttf) format("truetype"); }
+* { box-sizing: border-box; margin: 0; }
+body { font-family: Inter, sans-serif; font-weight: 500; font-size: 13px; line-height: 20px; background: #888; display: flex; gap: 24px; padding: 24px; width: max-content; }
+
+.theme-light {
+  --root-ink-1:#fdfdfc; --root-ink-2:#f9f9f8; --root-ink-3:#f1f0ef; --root-ink-4:#e9e8e6;
+  --root-ink-5:#e2e1de; --root-ink-6:#dad9d6; --root-ink-7:#cfceca; --root-ink-8:#bcbbb5;
+  --root-ink-9:#8d8d86; --root-ink-10:#82827c; --root-ink-11:#63635e; --root-ink-12:#21201c;
+  --ink-a3:#20100010; --ink-a4:#1f150019;
+  --surface-top:#fff; --ground: var(--root-ink-2); --panel: var(--surface-top); --raised: var(--surface-top);
+  --shadow-ink: 33 32 28;
+  --shadow-button: 0 1px 2px 0 rgb(var(--shadow-ink) / .12), 0 0 0 1px rgb(var(--shadow-ink) / .08);
+  --shadow-card: 0 0 0 1px rgb(var(--shadow-ink) / .07), 0 1px 2px 0 rgb(var(--shadow-ink) / .12), 0 3px 4px -2px rgb(var(--shadow-ink) / .08);
+  --shadow-panel: 0 0 0 0.5px var(--ink-a4), 0 1px 2px 0 rgb(var(--shadow-ink) / .015), 0 3px 4px -2px rgb(var(--shadow-ink) / .025);
+  --shadow-modal: 0 0 0 1px rgb(var(--shadow-ink) / .07), 0 1px 2px 0 rgb(var(--shadow-ink) / .14), 0 6px 8px -4px rgb(var(--shadow-ink) / .14);
+  --backdrop: rgb(0 0 0 / .3);
+  --secondary-bg: var(--raised); --secondary-hover: var(--root-ink-2);
+  --primary-bg: var(--root-ink-12); --primary-fg: var(--surface-top);
+  --shadow-primary: 0 0 0 1px var(--surface-top);
+}
+.theme-dark {
+  --root-ink-1:#111110; --root-ink-2:#191918; --root-ink-3:#222221; --root-ink-4:#2a2a28;
+  --root-ink-5:#31312e; --root-ink-6:#3b3a37; --root-ink-7:#494844; --root-ink-8:#62605b;
+  --root-ink-9:#6f6d66; --root-ink-10:#7c7b74; --root-ink-11:#b5b3ad; --root-ink-12:#eeeeec;
+  --ink-a3:#f6f6f513;
+  --ground:#080807; --panel: var(--root-ink-1); --raised: var(--root-ink-2);
+  --shadow-button: 0 0 0 0.5px var(--root-ink-7), 0 1px 2px 0 rgb(0 0 0 / .5); /* on a card: ink-4 fill */
+  --shadow-card: 0 0 0 0.5px var(--root-ink-6), 0 1px 2px 0 rgb(0 0 0 / .5), 0 3px 4px -2px rgb(0 0 0 / .4);
+  --shadow-panel: 0 0 0 0.5px var(--ink-a3), 0 1px 2px 0 rgb(0 0 0 / .5), 0 3px 4px -2px rgb(0 0 0 / .4);
+  --shadow-modal: 0 0 0 0.5px var(--root-ink-7), 0 1px 2px 0 rgb(0 0 0 / .5), 0 6px 8px -4px rgb(0 0 0 / .5);
+  --backdrop: rgb(0 0 0 / .9);
+  --secondary-bg: var(--root-ink-4); --secondary-hover: var(--root-ink-5);
+  --primary-bg: var(--root-ink-12); --primary-fg: var(--root-ink-1);
+  --shadow-primary: 0 0 0 0.5px var(--primary-bg), 0 1px 2px 0 rgb(0 0 0 / .5);
+}
+
+.frame { width: 390px; height: 400px; padding: 8px; background: var(--ground); color: var(--root-ink-12); position: relative; overflow: hidden; }
+.panel { background: var(--panel); border-radius: 8px; box-shadow: var(--shadow-panel); padding: 20px; height: 100%; }
+.card { background: var(--raised); border-radius: 8px; box-shadow: var(--shadow-card); padding: 24px; }
+.title { font-size: 16px; line-height: 24px; }
+.desc { color: var(--root-ink-11); margin-top: 2px; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+
+.btn { height: 36px; padding: 0 14px; border: 0; border-radius: 6px; font: inherit; letter-spacing: -0.01em; cursor: pointer;
+  transition: transform 150ms cubic-bezier(.23,1,.32,1), background-color 150ms cubic-bezier(.23,1,.32,1); }
+.btn:active { transform: scale(.97); }
+.btn:focus-visible { outline: 2px solid var(--root-ink-10); outline-offset: 2px; }
+.btn.secondary { background: var(--secondary-bg); color: var(--root-ink-12); box-shadow: var(--shadow-button); }
+.btn.secondary:hover { background: var(--secondary-hover); }
+.btn.primary { background: var(--primary-bg); color: var(--primary-fg); box-shadow: var(--shadow-primary); }
+.btn.primary:hover { background: color-mix(in oklab, var(--primary-bg) 93%, var(--primary-fg)); }
+
+/* modal recipe: backdrop 30 % / 90 % + 2 px blur, overlay card with shadow-modal */
+.modal-demo .backdrop { position: absolute; inset: 0; background: var(--backdrop); backdrop-filter: blur(2px); display: grid; place-items: center; }
+.modal { background: var(--surface-top); width: 300px; border-radius: 8px; box-shadow: var(--shadow-modal); padding: 24px; }
+.theme-dark .modal { background: var(--root-ink-2); }
+</style>
+</head>
+<body>
+  <div class="theme-light frame" id="light"><div class="panel"><div class="card">
+    <div class="title">New project</div>
+    <div class="desc">Projects keep your tasks and files together.</div>
+    <div class="actions"><button class="btn secondary">Cancel</button><button class="btn primary">Create project</button></div>
+  </div></div></div>
+
+  <div class="theme-dark frame" id="dark"><div class="panel"><div class="card">
+    <div class="title">New project</div>
+    <div class="desc">Projects keep your tasks and files together.</div>
+    <div class="actions"><button class="btn secondary">Cancel</button><button class="btn primary">Create project</button></div>
+  </div></div></div>
+
+  <div class="theme-light frame modal-demo"><div class="panel"><div class="card"><div class="title">New project</div><div class="desc">Projects keep your tasks and files together.</div></div></div>
+    <div class="backdrop"><div class="modal"><div class="title">Blurred backdrop</div><div class="desc">The page behind is blurred by 2 px.</div><div class="actions"><button class="btn primary">Close</button></div></div></div></div>
+
+  <div class="theme-dark frame modal-demo"><div class="panel"><div class="card"><div class="title">New project</div><div class="desc">Projects keep your tasks and files together.</div></div></div>
+    <div class="backdrop"><div class="modal"><div class="title">Blurred backdrop</div><div class="desc">The page behind is blurred by 2 px.</div><div class="actions"><button class="btn primary">Close</button></div></div></div></div>
+</body>
+</html>
