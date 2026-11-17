@@ -1,0 +1,33 @@
+# OS and editors
+.DS_Store
+.idea/
+*.iml
+.vscode/
+
+# Flutter / Dart, in every project folder
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/ios/Pods/
+**/macos/Pods/
+**/android/.gradle/
+**/android/local.properties
+
+# Secrets
+**/env/*.json
+!**/env/example.json
+**/android/key.properties
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+.env
+.env.*
+
+# Local work
+recordings/
+.spike/
+**/test/**/failures/
+
+# Never add .kiro here: the hackathon requires every .kiro/ folder to be committed.
