@@ -21,7 +21,9 @@ Checked 13 Nov 2026:
 - `info_retrieve` returns `version` and `news_sites` (used for the filter).
 
 Attribution: "News data from Spaceflight News API by The Space Devs" in Settings and README.
-Check their terms page before release **[VERIFY S14]**.
+No licence or terms page is published (S14). Article `image_url` points at the publishers' servers, so real article
+images and titles stay out of the demo video and screenshots; use placeholders. Send a custom `User-Agent` (the default
+Python one got a 403) and cache responses for about 10 minutes (`cache-control: max-age=600`).
 
 ## 2. Demo fixture for `api-update`
 
@@ -56,7 +58,7 @@ Destinations: News · Blogs · Saved · Settings (bottom tab bar on mobile, rail
 - **Filter:** the pill opens a picker with `AppChoiceList` (checkbox rows) from `info_retrieve` and a primary **Apply**
   (the one primary inside the picker; faint while nothing changed). Desktop/tablet: `AppDialog` (460) until `AppMenu`
   exists; mobile: `AppSheet`. Once applied, the pill reads "News site NASA, SpaceNews" (label ink-10, value ink-12,
-  value truncates at 180 px) with a × to clear. Multi-value `news_site` format **[VERIFY S14]**.
+  value truncates at 180 px) with a × to clear. Multi-value format: one comma-separated param, `news_site=A,B` (union); never a repeated key (S14).
 - **Detail:** 16:9 hero image with a 0.5 px frame; title as `display` (24/32 on mobile when it wraps past 2 lines);
   news site + date as `meta`; summary as `body` capped at 70 ch in the reading column; one primary
   **Read full article** (it leaves the app, so it gets the external-link arrow); **Save** as a secondary toggle;

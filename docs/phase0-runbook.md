@@ -69,13 +69,13 @@ There are two ways to run it:
 
 | Stage | Who | Chat | Permission mode | Done |
 |---|---|---|---|---|
-| 1. Repo and Kiro setup | agent | new | Supervised | [ ] |
+| 1. Repo and Kiro setup | agent | new | Supervised | [x] |
 | 2. Prepare the hook, skill, CLI, and Crew tests | agent | same chat as Stage 1 is fine | Supervised | [ ] |
 | 3. Manual tests | user | several new chats, terminal, Crew | as listed in Stage 3 | [ ] |
 | 4. Record the test results, clean up | agent | new | Supervised | [ ] |
-| 5. Tactile spike | agent + user | new | Accept file changes | [ ] |
-| 6. Web spike on GitHub Pages | agent + user | new | Accept file changes | [ ] |
-| 7. Other spikes and wrap-up | agent | new | Accept file changes | [ ] |
+| 5. Tactile spike | agent + user | new | Accept file changes | [x] |
+| 6. Web spike on GitHub Pages | agent + user | new | Accept file changes | [x] |
+| 7. Other spikes and wrap-up | agent | new | Accept file changes | [x] |
 
 Stage 3 counts as done when the user sends you the filled-in notes.
 

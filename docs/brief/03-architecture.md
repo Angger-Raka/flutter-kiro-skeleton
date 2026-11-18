@@ -27,13 +27,13 @@ Flutter: latest stable at project start (3.50 at the time of writing); FVM optio
 | Formatting | `intl` | Dates, numbers, currency, plurals, compact numbers |
 | Images | `cached_network_image` (Android, iOS, desktop); `Image.network` on web | Inside the core `AppNetworkImage` (created in Orbit, synced back). On web, Flutter falls back to an `<img>` element for images served without CORS **[VERIFY S24]** |
 | URL opening | `url_launcher` | Wrapped by the core `LinkLauncher` service |
-| Icons | Lucide icon package **[VERIFY S23]** | One icon set for the whole UI; fallback Material Symbols Rounded weight 300 |
+| Icons | `lucide_icons_flutter` with `LucideIcons300` (S23) | One icon set for the whole UI; fallback Material Symbols Rounded weight 300 |
 | Fonts | Inter Medium (bundled, SIL OFL) | One weight (tactile one-weight rule); apps may swap via `tokens.yaml` |
 | Branding | `flutter_launcher_icons`, `flutter_native_splash` (dev) | App icons, native splash, and the web loading screen from `assets/branding/` |
 | Lints | `very_good_analysis` | Plus custom rules via `kit check` |
 | Codegen | `build_runner` | |
 | Test | `flutter_test`, `bloc_test`, `mocktail` | The `flutter_test` accessibility guideline matchers run inside the stress harness (`04` §12) |
-| PBT | `glados` or `kiri-check` | Choose in Phase 0 **[VERIFY S10]** |
+| PBT | `kiri_check` (S10) | Maintained, Dart 3 constraint, stateful tests; fallback `glados` |
 | Toolkit | `kit` (path dev_dependency `tool/kit`) | Depends on `analyzer`, `yaml`, `args`, `path`, `crypto`, `glob` |
 
 App-only packages: Tally adds `drift`, `drift_flutter`, `sqlite3_flutter_libs`. Orbit adds nothing beyond the

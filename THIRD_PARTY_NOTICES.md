@@ -7,3 +7,29 @@
 - Use: vendored unchanged in skeleton/.kiro/skills/tactile-design/
 
 Radix Colors, the fonts, the icon set, and the Spaceflight News API are added here when they enter the repo.
+
+## Inter 4.1
+- Source: https://github.com/rsms/inter/releases/tag/v4.1
+- Copyright: 2016 The Inter Project Authors
+- Licence: SIL Open Font License 1.1; the text is in skeleton/assets/fonts/OFL.txt
+- Use: skeleton/assets/fonts/Inter-Medium.ttf (also copied into spikes/tactile_spike)
+
+## lucide_icons_flutter 4.0.3
+- Source: https://pub.dev/packages/lucide_icons_flutter
+- Licence: MIT (the Lucide glyphs it bundles are ISC); the licence text was not re-checked in the pub cache
+- Use: pub dependency, chosen in S23 (spikes/icon_spike/pubspec.yaml); nothing vendored
+
+## material_symbols_icons 4.2960.0
+- Source: https://pub.dev/packages/material_symbols_icons
+- Licence: Apache-2.0 (font by Google)
+- Use: pub dependency, S23 fallback (spikes/icon_spike/pubspec.yaml); nothing vendored
+
+## kiri_check 1.4.0
+- Source: https://pub.dev/packages/kiri_check
+- Licence: Apache-2.0
+- Use: dev dependency chosen in S10 (spikes/pbt_spike/pubspec.yaml); glados 1.1.7 (MIT) is the fallback; nothing vendored
+
+## Spaceflight News API (The Space Devs)
+- Source: https://api.spaceflightnewsapi.net/v4/
+- Licence: none stated by the project
+- Use: runtime HTTP data source only; nothing vendored. Article images belong to their publishers and are not redistributed.
