@@ -33,3 +33,15 @@ Radix Colors, the fonts, the icon set, and the Spaceflight News API are added he
 - Source: https://api.spaceflightnewsapi.net/v4/
 - Licence: none stated by the project
 - Use: runtime HTTP data source only; nothing vendored. Article images belong to their publishers and are not redistributed.
+
+## Space Grotesk 2.0.0
+- Source: https://github.com/floriankarsten/space-grotesk/releases/tag/2.0.0 (SpaceGrotesk-2.0.0.zip, ttf/static)
+- Copyright: 2020 The Space Grotesk Project Authors
+- Licence: SIL Open Font License 1.1; the text is in skeleton/assets/fonts/OFL-SpaceGrotesk.txt
+- Use: skeleton/assets/fonts/SpaceGrotesk-Medium.ttf (Orbit display and section titles)
+
+## Plus Jakarta Sans 2.7.1
+- Source: https://github.com/tokotype/PlusJakartaSans/releases/tag/2.7.1 (PlusJakartaSans-2.7.1.zip, ttf)
+- Copyright: 2020 The Plus Jakarta Sans Project Authors
+- Licence: SIL Open Font License 1.1; the text is in skeleton/assets/fonts/OFL-PlusJakartaSans.txt
+- Use: skeleton/assets/fonts/PlusJakartaSans-Medium.ttf (Tally)
