@@ -126,25 +126,88 @@ const _rawLiteralExceptions = <String, Map<String, String>>{
 // Source helpers
 // ---------------------------------------------------------------------------
 
-String _stripComments(String src) {
-  final noBlock = src.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
-  return noBlock.replaceAll(RegExp(r'//[^\n]*'), '');
+final _word = RegExp(r'[A-Za-z0-9_$]+');
+
+/// Scans Dart source once, left to right, so a `//` or `/*` inside a string is
+/// text and a quote inside a comment is comment. Comments are dropped
+/// (newlines kept, so `^` anchors still work). With [blankStrings] the
+/// contents of every string literal are dropped too, quotes kept.
+///
+/// shortcut: string interpolation `${...}` is treated as string text, so code
+/// inside an interpolation is not checked; use the analyzer's token stream if
+/// that ever matters.
+String _scan(String src, {required bool blankStrings}) {
+  final out = StringBuffer();
+  var i = 0;
+  final n = src.length;
+  bool at(String s) => src.startsWith(s, i);
+  while (i < n) {
+    if (at('//')) {
+      while (i < n && src[i] != '\n') {
+        i++;
+      }
+    } else if (at('/*')) {
+      // Dart block comments nest.
+      var depth = 0;
+      while (i < n) {
+        if (at('/*')) {
+          depth++;
+          i += 2;
+        } else if (at('*/')) {
+          depth--;
+          i += 2;
+          if (depth == 0) break;
+        } else {
+          if (src[i] == '\n') out.write('\n');
+          i++;
+        }
+      }
+    } else if (src[i] == "'" || src[i] == '"' || at("r'") || at('r"')) {
+      final raw = src[i] == 'r';
+      if (raw) {
+        if (!blankStrings) out.write('r');
+        i++;
+      }
+      final q = src[i];
+      final triple = at(q * 3);
+      final close = triple ? q * 3 : q;
+      out.write(close);
+      i += close.length;
+      while (i < n && !at(close)) {
+        if (!triple && src[i] == '\n') break; // unterminated: stop at the line
+        final step = !raw && src[i] == r'\' && i + 1 < n ? 2 : 1;
+        if (!blankStrings) {
+          out.write(src.substring(i, i + step));
+        } else if (src[i] == '\n') {
+          out.write('\n');
+        }
+        i += step;
+      }
+      if (at(close)) {
+        out.write(close);
+        i += close.length;
+      }
+    } else {
+      // An identifier ending in r (`bar'x'` is not valid Dart) is copied whole
+      // so its last letter is never read as a raw-string prefix.
+      final m = _word.matchAsPrefix(src, i);
+      if (m != null) {
+        out.write(m[0]);
+        i = m.end;
+      } else {
+        out.write(src[i]);
+        i++;
+      }
+    }
+  }
+  return out.toString();
 }
+
+String _stripComments(String src) => _scan(src, blankStrings: false);
 
 /// Comments removed and string literal contents blanked, so patterns such as
 /// `Duration(` inside text do not count as code.
-String _code(String src) {
-  final noComments = _stripComments(src);
-  return noComments
-      .replaceAllMapped(
-        RegExp(r"'(?:\\.|[^'\\\n])*'"),
-        (_) => "''",
-      )
-      .replaceAllMapped(
-        RegExp(r'"(?:\\.|[^"\\\n])*"'),
-        (_) => '""',
-      );
-}
+String _code(String src) => _scan(src, blankStrings: true);
 
 String _snake(String name) => name
     .replaceAllMapped(
@@ -450,6 +513,40 @@ void main() {
         _noRawTokensOutsideTheme,
         'core/x.dart',
         "const s = 'Duration(';",
+      );
+    });
+
+    test('comment stripping is string-aware (SF2)', () {
+      // `//` inside a string does not hide the rest of the line.
+      fails(
+        _noRawTokensOutsideTheme,
+        'app/v1.dart',
+        "final a = ['https://x.dev', const Duration(seconds: 1)];",
+      );
+      // `/*` and `*/` inside strings do not form a comment.
+      fails(
+        _noRawTokensOutsideTheme,
+        'core/v2.dart',
+        "const a = '/*';\nconst d = Duration(seconds: 3);\nconst b = '*/';",
+      );
+      fails(_noRawTokensOutsideTheme, 'core/v3.dart', r"r'\' + Colors.red");
+      fails(
+        _noRawTokensOutsideTheme,
+        'core/v4.dart',
+        "const a = '''x\n// y\n''';\nconst d = Duration(seconds: 3);",
+      );
+      // Real comments and string contents still do not count.
+      passes(
+        _noRawTokensOutsideTheme,
+        'core/x.dart',
+        "/* Duration( /* nested */ Colors. */ final u = 'https://x.dev';\n"
+            '// Duration(\n'
+            'final s = "Colors.red";',
+      );
+      // Imports keep their URI after comment stripping.
+      expect(
+        _stripComments("import 'a.dart'; // x"),
+        "import 'a.dart'; ",
       );
     });
 
