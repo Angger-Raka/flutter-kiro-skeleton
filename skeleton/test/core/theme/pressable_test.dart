@@ -50,9 +50,31 @@ Color? fillOf(WidgetTester tester) {
 }
 
 void main() {
-  const hover = Color(0x00000000);
   // panel scope, light: hover = local ground (1) + 1 = working ink 2.
   final expectedHover = AppPalette.light.inkStep(2);
+  final hover = expectedHover.withAlpha(0);
+
+  platformTest('hover fade keeps the hover colour RGB', TargetPlatform.macOS, (
+    tester,
+  ) async {
+    await tester.pumpWidget(host(pressable(onPressed: () {})));
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: Offset.zero);
+    await mouse.moveTo(tester.getCenter(find.byKey(_leaf)));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 30));
+    final box = tester.widget<DecoratedBox>(
+      find.descendant(
+        of: find.byType(AnimatedContainer),
+        matching: find.byType(DecoratedBox),
+      ),
+    );
+    final mid = (box.decoration as BoxDecoration).color!;
+    expect(mid.a, greaterThan(0));
+    expect(mid.a, lessThan(expectedHover.a));
+    expect(mid.toARGB32() & 0xFFFFFF, expectedHover.toARGB32() & 0xFFFFFF);
+    await tester.pumpAndSettle();
+  });
 
   testWidgets('press scales to pressedScale and release returns to 1', (
     tester,

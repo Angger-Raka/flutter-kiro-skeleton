@@ -83,7 +83,8 @@ class _PressableState extends State<Pressable> {
       duration: duration,
       curve: AppMotion.easeOut,
       decoration: BoxDecoration(
-        color: showFill ? scope.hoverFill : const Color(0x00000000),
+        // Same RGB when idle: the fill fades in alpha only (no grey flash).
+        color: showFill ? scope.hoverFill : scope.hoverFill.withAlpha(0),
         borderRadius: widget.borderRadius,
       ),
       child: widget.child,
