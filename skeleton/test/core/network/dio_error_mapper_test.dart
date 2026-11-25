@@ -73,10 +73,14 @@ void main() {
     }
   });
 
-  test('4xx and 5xx give different results', () {
-    expect(_status(400), isNot(_status(500)));
+  test('specific statuses get their subtype, others map to server', () {
+    expect(_status(401), isA<UnauthorizedFailure>());
+    expect(_status(403), isA<UnauthorizedFailure>());
     expect(_status(404), isA<NotFoundFailure>());
-    expect(_status(503), isA<ServerFailure>());
+    expect(_status(422), isA<ValidationFailure>());
+    for (final c in [400, 409, 429, 500, 503]) {
+      expect(_status(c), isA<ServerFailure>(), reason: 'status $c');
+    }
   });
 
   // Property 7: connectivity mapping.

@@ -168,7 +168,7 @@ returns the same shape of failure.
 2. THE core SHALL define the base `UseCase` contract in `core/usecase/usecase.dart` that returns `Either<Failure, T>` using `fpdart`.
 3. THE `core/network/api_client.dart` SHALL provide the single `Dio` client, with interceptors in `core/network/interceptors/`, including an authentication interceptor that does nothing by default (an extension point).
 4. WHEN a repository wraps a call with `guardRepository`, THE guardRepository SHALL return `Right(value)` if the call completes and `Left(Failure)` if the call throws any exception or error.
-5. WHEN `dio_error_mapper` receives a `DioException` with an HTTP status code, THE mapper SHALL map the status to a specific Failure subtype, with 4xx and 5xx ranges mapped to different subtypes.
+5. WHEN `dio_error_mapper` receives a `DioException` with an HTTP status code, THE mapper SHALL map 401 and 403, 404, and 422 each to a specific Failure subtype, and SHALL map every other status to `server(statusCode)`.
 6. WHEN `dio_error_mapper` receives a `DioException` caused by a timeout or no connection, THE mapper SHALL return a connectivity Failure.
 7. THE domain layer SHALL NOT import `dio`.
 

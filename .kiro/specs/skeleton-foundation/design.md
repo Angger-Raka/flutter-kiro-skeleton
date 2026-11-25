@@ -899,11 +899,11 @@ Failure mapDioException(DioException e) => switch (e.type) {
       DioExceptionType.sendTimeout ||
       DioExceptionType.receiveTimeout ||
       DioExceptionType.connectionError => const Failure.network(),
-      DioExceptionType.badResponse => _mapStatus(e.response?.statusCode),
+      DioExceptionType.badResponse => mapStatus(e.response?.statusCode),
       _ => Failure.unexpected(message: e.message),
     };
 
-Failure _mapStatus(int? code) => switch (code) {
+Failure mapStatus(int? code) => switch (code) {
       401 || 403 => const Failure.unauthorized(),
       404 => const Failure.notFound(),
       422 => const Failure.validation(),
@@ -1539,7 +1539,7 @@ after `load()`, with no throw.
 
 ### Property 6: HTTP status mapping
 
-∀ status code c: `_mapStatus(c)` is `unauthorized` for 401/403, `notFound` for 404, `validation` for 422,
+∀ status code c: `mapStatus(c)` is `unauthorized` for 401/403, `notFound` for 404, `validation` for 422,
 else `server(statusCode: c)`.
 
 **Validates: Requirements R2.2**
@@ -1638,7 +1638,7 @@ and bloc tests that need no harness.
 ### Unit testing
 
 - `Env.fromDartDefines` reads defines with correct defaults.
-- `guardRepository` / `mapDioException` / `_mapStatus`: each exception and status code maps to the expected
+- `guardRepository` / `mapDioException` / `mapStatus`: each exception and status code maps to the expected
   `Failure` variant (table-driven).
 - `AppSettings` mapping: `flutterThemeMode` and `flutterLocale` for every enum value; `system` → `null` locale.
 - `AppFormatters`: money with and without decimals, compact notation (en and id), null → en dash, date in
@@ -1665,7 +1665,7 @@ table-driven tests or review.
 | Properties | Form | Subject |
 |---|---|---|
 | 1, 2, 3, 4 | PBT (`kiri_check`) | `AppSettingsCubit` over an in-memory `KeyValueStore`, `AppSettings` mapping |
-| 5, 6, 7 | PBT | `guardRepository`, `_mapStatus`, `mapDioException` |
+| 5, 6, 7 | PBT | `guardRepository`, `mapStatus`, `mapDioException` |
 | 8, 9, 10 | PBT | `cssBlurToFlutter` |
 | 17, 18 | PBT | `WindowClassX.fromWidth`, input-mode mapping from `TargetPlatform` |
 | 11, 12, 13 | table-driven | generator run on a passing and an intentionally failing fixture |
