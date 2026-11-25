@@ -28,6 +28,14 @@ class _AppState extends State<App> {
   late final AppSettingsCubit _settings = getIt<AppSettingsCubit>()..load();
   late final GoRouter _router = buildRouter();
 
+  // At most 2 x 3 x 2 entries, so the cache is never pruned.
+  final Map<(Brightness, WindowClass, InputMode), ThemeData> _themes = {};
+
+  /// One [ThemeData] per combination, so a resize inside one window class
+  /// keeps the same object.
+  ThemeData _themeFor(Brightness b, WindowClass w, InputMode m) =>
+      _themes.putIfAbsent((b, w, m), () => buildTheme(b, w, m));
+
   @override
   void dispose() {
     _router.dispose();
@@ -58,11 +66,7 @@ class _AppState extends State<App> {
             AppThemeMode.system => MediaQuery.platformBrightnessOf(context),
           };
           return Theme(
-            data: buildTheme(
-              brightness,
-              context.windowClass,
-              context.inputMode,
-            ),
+            data: _themeFor(brightness, context.windowClass, context.inputMode),
             child: child!,
           );
         },

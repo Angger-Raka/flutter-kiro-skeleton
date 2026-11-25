@@ -111,6 +111,25 @@ void main() {
     expect(_theme(tester).brightness, Brightness.dark);
   });
 
+  testWidgets('resizing inside one window class keeps the same ThemeData', (
+    tester,
+  ) async {
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 900);
+    await _pumpApp(tester);
+    final before = _theme(tester);
+
+    tester.view.physicalSize = const Size(1000, 700);
+    await tester.pumpAndSettle();
+    expect(identical(_theme(tester), before), isTrue);
+
+    tester.view.physicalSize = const Size(1300, 700);
+    await tester.pumpAndSettle();
+    expect(identical(_theme(tester), before), isFalse);
+  });
+
   test('main.dart is a single statement calling bootstrap', () {
     final body = File(
       'lib/main.dart',
