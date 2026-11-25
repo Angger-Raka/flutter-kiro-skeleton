@@ -6,6 +6,7 @@ import 'dart:io';
 import 'src/knobs.dart';
 import 'src/ladders.dart';
 import 'src/palette.dart';
+import 'src/shadows.dart';
 
 /// Default input and output, relative to `skeleton/`.
 const defaultYamlPath = 'design/tokens.yaml';
@@ -53,6 +54,8 @@ String _render(Knobs knobs) {
     renderPalette(light, dark),
     '',
     renderLadders(knobs.radiusControl),
+    '',
+    renderShadows(light, dark),
   ].join('\n');
 }
 
