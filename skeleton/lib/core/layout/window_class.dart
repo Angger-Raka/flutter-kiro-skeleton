@@ -49,7 +49,6 @@ extension InputModeX on InputMode {
   }
 }
 
-/// Context shortcuts.
 /// Shortcuts on [BuildContext].
 extension LayoutContextX on BuildContext {
   /// Window class of the current width.
