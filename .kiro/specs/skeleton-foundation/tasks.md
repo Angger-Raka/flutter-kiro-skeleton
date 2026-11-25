@@ -29,7 +29,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `chore(skeleton): scaffold Flutter project for all platforms`
     - _Requirements: 1.1, 1.2, 1.4, 1.7_
 
-  - [ ] 1.2 Set the display name "Skeleton" on all six platforms
+  - [x] 1.2 Set the display name "Skeleton" on all six platforms
     - Change the label in `AndroidManifest.xml`, `CFBundleDisplayName` and `CFBundleName` in iOS and macOS `Info.plist` (macOS `PRODUCT_NAME` in `AppInfo.xcconfig`), `web/index.html` `<title>` and apple-mobile-web-app-title, `web/manifest.json` `name` and `short_name`, `windows/runner/main.cpp` window title and `Runner.rc`, and `linux/runner/my_application.cc` title.
     - Acceptance: `grep -rn "skeleton"` in those files shows no user-visible lower-case name left. The display name reads "Skeleton" in each file.
     - Commit: `chore(skeleton): set display name to Skeleton on all platforms`
