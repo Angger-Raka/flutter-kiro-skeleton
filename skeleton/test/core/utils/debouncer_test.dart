@@ -6,7 +6,7 @@ void main() {
   const wait = Duration(milliseconds: 400);
 
   testWidgets('rapid calls collapse to one', (tester) async {
-    final debouncer = Debouncer();
+    final debouncer = Debouncer(wait);
     final calls = <int>[];
 
     debouncer.run(() => calls.add(1));
@@ -22,7 +22,7 @@ void main() {
   });
 
   testWidgets('dispose cancels the pending action', (tester) async {
-    final debouncer = Debouncer();
+    final debouncer = Debouncer(wait);
     var called = false;
 
     debouncer

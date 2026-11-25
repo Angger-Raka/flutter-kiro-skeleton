@@ -1,10 +1,10 @@
 import 'dart:async';
 
 /// Collapses rapid calls into one. Used for search and query input
-/// (400 ms by default in the design system).
+/// (the design system uses 400 ms; the caller passes it).
 class Debouncer {
   /// Creates a debouncer that waits [duration] after the last call.
-  Debouncer([this.duration = const Duration(milliseconds: 400)]);
+  Debouncer(this.duration);
 
   /// Quiet time before the last [run] action executes.
   final Duration duration;
