@@ -1,10 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
-// TEMPORARY: replace with AppLayout.breakpointTablet / breakpointDesktop from
-// tokens.g.dart once the generator output exists (task 2.x). Values from 04 §3.
-const double _breakpointTablet = 768;
-const double _breakpointDesktop = 1200;
+import 'package:skeleton/core/theme/tokens.g.dart';
 
 /// Window size class derived from the logical width.
 enum WindowClass {
@@ -21,9 +17,10 @@ enum WindowClass {
 /// Width to [WindowClass] mapping.
 extension WindowClassX on WindowClass {
   /// mobile < 768 <= tablet < 1200 <= desktop.
-  static WindowClass fromWidth(double width) => width < _breakpointTablet
+  static WindowClass fromWidth(double width) =>
+      width < AppLayout.breakpointTablet
       ? WindowClass.mobile
-      : width < _breakpointDesktop
+      : width < AppLayout.breakpointDesktop
       ? WindowClass.tablet
       : WindowClass.desktop;
 
