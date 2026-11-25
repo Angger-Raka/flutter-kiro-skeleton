@@ -130,6 +130,8 @@ class _PressableState extends State<Pressable> {
       button: true,
       enabled: _enabled,
       label: widget.semanticLabel,
+      // An explicit label replaces the child's own text (no "Save Save").
+      excludeSemantics: widget.semanticLabel != null,
       onTap: widget.onPressed,
       child: MouseRegion(
         cursor: _enabled ? SystemMouseCursors.click : MouseCursor.defer,

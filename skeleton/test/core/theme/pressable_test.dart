@@ -147,6 +147,25 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('semantic label is not duplicated by a child Text', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      host(
+        Pressable(
+          onPressed: () {},
+          pressedScale: 0.97,
+          semanticLabel: 'Save',
+          child: const Text('Save'),
+        ),
+      ),
+    );
+    final node = tester.getSemantics(find.bySemanticsLabel('Save'));
+    expect(node.label, 'Save');
+    handle.dispose();
+  });
+
   testWidgets('disabled ignores taps and press', (tester) async {
     await tester.pumpWidget(host(pressable()));
     final g = await tester.startGesture(tester.getCenter(find.byKey(_leaf)));
