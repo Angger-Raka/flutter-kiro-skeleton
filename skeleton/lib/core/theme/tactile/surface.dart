@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:skeleton/core/theme/tactile/motion.dart';
+import 'package:skeleton/core/theme/tactile/press_fill.dart';
 import 'package:skeleton/core/theme/tactile/shadows.dart';
 import 'package:skeleton/core/theme/tokens.g.dart';
 
@@ -209,11 +211,33 @@ class TactileSurface extends StatelessWidget {
     final content = padding == null
         ? child
         : Padding(padding: padding!, child: child);
-    final inner = SurfaceScope.of(context).withKind(kind, content);
+    final borderRadius = radius ?? _defaultRadius;
+    final parent = SurfaceScope.of(context);
+    final press = PressFill.maybeOf(context);
+    var body = content;
+    if (press != null) {
+      // Local ground + 1 of this surface; same RGB when idle (alpha fade).
+      final hover = parent.withKind(kind, const SizedBox.shrink()).hoverFill;
+      body = AnimatedContainer(
+        duration: press.duration,
+        curve: AppMotion.easeOut,
+        decoration: BoxDecoration(
+          color: press.active ? hover : hover.withAlpha(0),
+          borderRadius: borderRadius,
+        ),
+        // The fill belongs to this surface only, not to nested ones.
+        child: PressFill(
+          active: false,
+          duration: press.duration,
+          child: content,
+        ),
+      );
+    }
+    final inner = parent.withKind(kind, body);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: inner.fill,
-        borderRadius: radius ?? _defaultRadius,
+        borderRadius: borderRadius,
         boxShadow: SurfaceShadows.drop(inner),
       ),
       child: inner,

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,7 @@ import 'package:skeleton/core/settings/app_settings.dart';
 import 'package:skeleton/core/settings/app_settings_cubit.dart';
 import 'package:skeleton/core/theme/app_theme.dart';
 import 'package:skeleton/core/theme/tactile/pressable.dart';
+import 'package:skeleton/core/theme/tactile/surface.dart';
 
 class MockSettings extends MockCubit<AppSettings> implements AppSettingsCubit {}
 
@@ -175,6 +177,66 @@ void main() {
       });
     }
   }
+
+  group('hover and pressed fill show above the surface (Req 16.2)', () {
+    // `_ChoiceButton` "Dark" (not selected): its raised surface fill is opaque.
+    final finder = find.widgetWithText(Pressable, 'Dark');
+    final surface = find.descendant(
+      of: finder,
+      matching: find.byType(TactileSurface),
+    );
+
+    /// Hover fill of the raised surface (local ground + 1).
+    Color hoverFill(WidgetTester tester) => SurfaceScope.of(
+      tester.element(find.descendant(of: surface, matching: find.byType(Text))),
+    ).hoverFill;
+
+    /// Colours painted inside the surface fill, outermost first.
+    List<Color?> painted(WidgetTester tester) => find
+        .descendant(of: surface, matching: find.byType(DecoratedBox))
+        .evaluate()
+        .map((e) => (e.widget as DecoratedBox).decoration)
+        .whereType<BoxDecoration>()
+        .map((d) => d.color)
+        .skip(1) // the surface's own fill
+        .toList();
+
+    for (final brightness in Brightness.values) {
+      testWidgets(
+        'mouse hover, ${brightness.name}',
+        variant: TargetPlatformVariant.only(TargetPlatform.macOS),
+        (tester) async {
+          await pump(tester, brightness: brightness);
+          final fill = hoverFill(tester);
+          expect(painted(tester).first, fill.withAlpha(0));
+
+          final mouse = await tester.createGesture(
+            kind: PointerDeviceKind.mouse,
+          );
+          await mouse.addPointer(location: const Offset(-50, -50));
+          addTearDown(mouse.removePointer);
+          await mouse.moveTo(tester.getCenter(finder));
+          await tester.pumpAndSettle();
+          expect(painted(tester).first, fill);
+
+          await mouse.moveTo(const Offset(-50, -50));
+          await tester.pumpAndSettle();
+          expect(painted(tester).first, fill.withAlpha(0));
+        },
+      );
+
+      testWidgets('touch press, ${brightness.name}', (tester) async {
+        await pump(tester, brightness: brightness);
+        final fill = hoverFill(tester);
+        final down = await tester.startGesture(tester.getCenter(finder));
+        await tester.pumpAndSettle();
+        expect(painted(tester).first, fill);
+        await down.up();
+        await tester.pumpAndSettle();
+        expect(painted(tester).first, fill.withAlpha(0));
+      });
+    }
+  });
 
   test('the page source has no Material button widgets', () {
     final source = File(

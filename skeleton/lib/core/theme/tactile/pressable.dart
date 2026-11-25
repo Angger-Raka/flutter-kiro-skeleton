@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:skeleton/core/layout/window_class.dart';
 import 'package:skeleton/core/theme/tactile/motion.dart';
+import 'package:skeleton/core/theme/tactile/press_fill.dart';
 import 'package:skeleton/core/theme/tactile/surface.dart';
 import 'package:skeleton/core/theme/tokens.g.dart';
 
@@ -97,7 +98,13 @@ class _PressableState extends State<Pressable> {
         color: showFill ? scope.hoverFill : scope.hoverFill.withAlpha(0),
         borderRadius: widget.borderRadius,
       ),
-      child: widget.child,
+      // A TactileSurface below paints its own opaque fill over this one, so it
+      // gets the fill too and draws it above its fill (Req 16.2).
+      child: PressFill(
+        active: showFill,
+        duration: duration,
+        child: widget.child,
+      ),
     );
     final ring = _enabled && widget.enableFocusRing && _focusRing;
     final visual = AnimatedScale(
