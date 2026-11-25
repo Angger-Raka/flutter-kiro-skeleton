@@ -4,7 +4,7 @@
 //
 // Runs, in order, from the skeleton root, and stops at the first failure:
 //   1. dart format --set-exit-if-changed .
-//   2. dart run build_runner build -d
+//   2. dart run build_runner build
 //   3. flutter analyze
 //   4. flutter test
 //
@@ -13,7 +13,7 @@ import 'dart:io';
 
 const _steps = <(String, String, List<String>)>[
   ('format', 'dart', ['format', '--set-exit-if-changed', '.']),
-  ('build_runner', 'dart', ['run', 'build_runner', 'build', '-d']),
+  ('build_runner', 'dart', ['run', 'build_runner', 'build']),
   ('analyze', 'flutter', ['analyze']),
   ('test', 'flutter', ['test']),
 ];

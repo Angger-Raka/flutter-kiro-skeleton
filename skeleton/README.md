@@ -82,7 +82,7 @@ All commands run in `skeleton/`. With FVM, prefix `flutter` and `dart` with
 ```sh
 fvm use 3.44.8                       # once; .fvmrc already pins it
 flutter pub get
-dart run build_runner build -d       # injection.config.dart, *.freezed.dart
+dart run build_runner build          # injection.config.dart, *.freezed.dart
 flutter gen-l10n                     # lib/core/l10n/app_localizations*.dart
 dart run tool/generate_tokens.dart   # lib/core/theme/tokens.g.dart
 flutter run -d chrome --dart-define-from-file=env/example.json
@@ -99,7 +99,7 @@ check). Other `env/*.json` files are git-ignored, so keep real values there.
 dart run tool/check.dart
 ```
 
-Runs `dart format --set-exit-if-changed .`, `dart run build_runner build -d`,
+Runs `dart format --set-exit-if-changed .`, `dart run build_runner build`,
 `flutter analyze`, and `flutter test`, and stops at the first failure.
 `flutter analyze` must report zero issues. The tests under `test/tool/` start
 `dart` as a subprocess, so `dart` must be on `PATH` (CI included).
