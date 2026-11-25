@@ -13,6 +13,18 @@ void main() {
       'https://x.test/p?token=abc123&page=2':
           'https://x.test/p?token=***&page=2',
       'access_token=abc': 'access_token=***',
+      'Authorization: Basic dXNlcjpwYXNz': 'Authorization: ***',
+      'authorization: Digest username="bob", response="abc"':
+          'authorization: ***',
+      '{"authorization":"Basic dXNlcjpwYXNz","a":1}':
+          '{"authorization":"***","a":1}',
+      'X-Api-Key: k-123': 'X-Api-Key: ***',
+      'api_key=k1&page=2': 'api_key=***&page=2',
+      '{"apiKey":"k1"}': '{"apiKey":"***"}',
+      'client_secret: s3cr3t': 'client_secret: ***',
+      'secret=abc': 'secret=***',
+      'Cookie: sid=abc; theme=dark': 'Cookie: ***',
+      'Set-Cookie: sid=abc; HttpOnly; Path=/': 'Set-Cookie: ***',
       'plain text stays': 'plain text stays',
       'Status 404 for /users/12': 'Status 404 for /users/12',
     };
