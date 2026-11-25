@@ -73,6 +73,27 @@ void main() {
     });
   }
 
+  test('no Material state layers: focus and button overlays are clear', () {
+    final t = buildTheme(
+      Brightness.dark,
+      WindowClass.desktop,
+      InputMode.pointer,
+    );
+    const clear = Color(0x00000000);
+    expect(t.focusColor, clear);
+    for (final style in [
+      t.elevatedButtonTheme.style,
+      t.filledButtonTheme.style,
+      t.outlinedButtonTheme.style,
+      t.textButtonTheme.style,
+      t.iconButtonTheme.style,
+    ]) {
+      for (final s in WidgetState.values) {
+        expect(style!.overlayColor!.resolve({s}), clear);
+      }
+    }
+  });
+
   test('buildTheme with equal inputs gives equal ThemeData', () {
     for (final b in Brightness.values) {
       final a = buildTheme(b, WindowClass.tablet, InputMode.pointer);

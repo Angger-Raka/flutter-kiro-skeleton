@@ -41,6 +41,7 @@ ThemeData buildTheme(
   final accent = p.hues[HueRole.accent]!;
   final danger = p.hues[HueRole.danger]!;
   const clear = Color(0x00000000);
+  const noOverlay = ButtonStyle(overlayColor: WidgetStatePropertyAll(clear));
 
   TextStyle ink(TextStyle style, int step) =>
       style.copyWith(color: p.inkStep(step));
@@ -68,6 +69,13 @@ ThemeData buildTheme(
     splashColor: clear,
     highlightColor: clear,
     hoverColor: clear,
+    focusColor: clear,
+    // No Material state layers: M3 buttons draw hover/focus via overlayColor.
+    elevatedButtonTheme: const ElevatedButtonThemeData(style: noOverlay),
+    filledButtonTheme: const FilledButtonThemeData(style: noOverlay),
+    outlinedButtonTheme: const OutlinedButtonThemeData(style: noOverlay),
+    textButtonTheme: const TextButtonThemeData(style: noOverlay),
+    iconButtonTheme: const IconButtonThemeData(style: noOverlay),
     colorScheme: ColorScheme(
       brightness: brightness,
       primary: p.inkStep(12),
