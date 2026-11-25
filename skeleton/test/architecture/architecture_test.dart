@@ -273,12 +273,32 @@ List<String> _domainImports(String rel, String src) {
       out.add('$rel: domain/ imports dio ($uri)');
     } else if (uri.contains(':') && !_domainAllowed.any(uri.startsWith)) {
       out.add('$rel: domain/ imports $uri');
+    } else if (!uri.contains(':') && _leavesDomain(rel, uri)) {
+      out.add('$rel: domain/ imports $uri, outside its domain/ folder');
     }
-    // Relative imports stay inside the layer folder by construction of this
-    // codebase; shortcut: not resolved, add path resolution if domain code
-    // starts using `../` to leave its layer.
   }
   return out;
+}
+
+/// Whether relative [uri] in file [rel] resolves outside the `domain/` folder
+/// that holds [rel].
+bool _leavesDomain(String rel, String uri) {
+  final parts = rel.split('/');
+  final domainRoot = parts.sublist(0, parts.lastIndexOf('domain') + 1);
+  final path = parts.sublist(0, parts.length - 1);
+  for (final seg in uri.split('/')) {
+    if (seg == '..') {
+      if (path.isEmpty) return true;
+      path.removeLast();
+    } else if (seg != '.') {
+      path.add(seg);
+    }
+  }
+  if (path.length <= domainRoot.length) return true;
+  for (var i = 0; i < domainRoot.length; i++) {
+    if (path[i] != domainRoot[i]) return true;
+  }
+  return false;
 }
 
 List<String> _typeFileRules(String rel, String src) {
@@ -482,6 +502,30 @@ void main() {
         'features/a/domain/x.dart',
         "import 'package:fpdart/fpdart.dart';",
       );
+    });
+
+    test('relative domain imports (SF3)', () {
+      for (final uri in [
+        '../data/impl.dart',
+        '../presentation/page.dart',
+        '../../b/data/x.dart',
+        './../data/impl.dart',
+        'entities/../../data/x.dart',
+      ]) {
+        fails(_domainImports, 'features/a/domain/bad.dart', "import '$uri';");
+      }
+      fails(
+        _domainImports,
+        'features/a/domain/usecases/x.dart',
+        "export '../../data/impl.dart';",
+      );
+      for (final uri in ['entities/user.dart', '../repo.dart', './x.dart']) {
+        passes(
+          _domainImports,
+          'features/a/domain/usecases/x.dart',
+          "import '$uri';",
+        );
+      }
     });
 
     test('one type per file and file name', () {
