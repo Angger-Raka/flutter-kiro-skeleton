@@ -45,3 +45,9 @@ Radix Colors, the fonts, the icon set, and the Spaceflight News API are added he
 - Copyright: 2020 The Plus Jakarta Sans Project Authors
 - Licence: SIL Open Font License 1.1; the text is in skeleton/assets/fonts/OFL-PlusJakartaSans.txt
 - Use: skeleton/assets/fonts/PlusJakartaSans-Medium.ttf (Tally)
+
+## Radix Colors (commit dbdb854)
+- Source: https://github.com/radix-ui/colors, commit dbdb854
+- Copyright: 2021-2022 Modulz
+- Licence: MIT
+- Use: colour data (sand, slate, blue, green, red, amber) fetched by skeleton/tool/radix/fetch_scales.dart into skeleton/tool/radix/radix_scales.dart
