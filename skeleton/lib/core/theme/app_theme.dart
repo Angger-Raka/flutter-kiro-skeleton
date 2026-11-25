@@ -4,6 +4,28 @@ import 'package:skeleton/core/theme/tactile/page_transition.dart';
 import 'package:skeleton/core/theme/tactile/typography.dart';
 import 'package:skeleton/core/theme/tokens.g.dart';
 
+/// Input fill: ink-3, ink-4 while focused. A value class (not a closure) so
+/// equal inputs give equal [ThemeData].
+@immutable
+class _InputFill extends WidgetStateColor {
+  const _InputFill({required this.idle, required this.focused})
+    : super(0x00000000);
+
+  final Color idle;
+  final Color focused;
+
+  @override
+  Color resolve(Set<WidgetState> states) =>
+      states.contains(WidgetState.focused) ? focused : idle;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _InputFill && other.idle == idle && other.focused == focused;
+
+  @override
+  int get hashCode => Object.hash(idle, focused);
+}
+
 /// Tactile [ThemeData] for Material widgets that stay in use (04 §9).
 ///
 /// Colours come from [AppPalette]; sizes, radii, and strokes do not depend on
@@ -88,10 +110,7 @@ ThemeData buildTheme(
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: WidgetStateColor.resolveWith(
-        (states) =>
-            states.contains(WidgetState.focused) ? p.inkStep(4) : p.inkStep(3),
-      ),
+      fillColor: _InputFill(idle: p.inkStep(3), focused: p.inkStep(4)),
       border: noBorder,
       enabledBorder: noBorder,
       disabledBorder: noBorder,

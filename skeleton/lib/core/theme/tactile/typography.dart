@@ -126,6 +126,34 @@ class AppTypography extends ThemeExtension<AppTypography> {
   final TextStyle badge;
 
   @override
+  bool operator ==(Object other) =>
+      other is AppTypography &&
+      display == other.display &&
+      figure == other.figure &&
+      section == other.section &&
+      title == other.title &&
+      body == other.body &&
+      description == other.description &&
+      meta == other.meta &&
+      label == other.label &&
+      field == other.field &&
+      badge == other.badge;
+
+  @override
+  int get hashCode => Object.hash(
+    display,
+    figure,
+    section,
+    title,
+    body,
+    description,
+    meta,
+    label,
+    field,
+    badge,
+  );
+
+  @override
   AppTypography copyWith({
     TextStyle? display,
     TextStyle? figure,

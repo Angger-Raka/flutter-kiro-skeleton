@@ -73,6 +73,19 @@ void main() {
     });
   }
 
+  test('buildTheme with equal inputs gives equal ThemeData', () {
+    for (final b in Brightness.values) {
+      final a = buildTheme(b, WindowClass.tablet, InputMode.pointer);
+      final c = buildTheme(b, WindowClass.tablet, InputMode.pointer);
+      expect(a, c);
+      expect(a.hashCode, c.hashCode);
+    }
+    expect(
+      buildTheme(Brightness.light, WindowClass.tablet, InputMode.pointer),
+      isNot(buildTheme(Brightness.light, WindowClass.mobile, InputMode.touch)),
+    );
+  });
+
   test('scrollbar is hidden on touch and 8 px on pointer', () {
     final pointer = buildTheme(
       Brightness.light,
