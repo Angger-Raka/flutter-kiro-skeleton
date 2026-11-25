@@ -29,4 +29,27 @@ void main() {
       );
     });
   });
+
+  group('macOS entitlements', () {
+    for (final name in ['DebugProfile', 'Release']) {
+      test('$name sets network.client to true', () {
+        final plist = File(
+          'macos/Runner/$name.entitlements',
+        ).readAsStringSync();
+        expect(
+          plist,
+          matches(
+            RegExp(
+              r'<key>com\.apple\.security\.network\.client</key>\s*<true/>',
+            ),
+          ),
+        );
+      });
+    }
+  });
+
+  test('iOS Info.plist has no NSAppTransportSecurity key', () {
+    final plist = File('ios/Runner/Info.plist').readAsStringSync();
+    expect(plist, isNot(contains('NSAppTransportSecurity')));
+  });
 }

@@ -19,7 +19,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
 
 ## Tasks
 
-- [ ] 1. Scaffold, toolchain, dependencies, platform setup
+- [x] 1. Scaffold, toolchain, dependencies, platform setup
 
   - [x] 1.1 Create the Flutter project and pin the toolchain
     - Run `fvm use 3.44.8` inside `skeleton/` to write `skeleton/.fvmrc`, then `flutter create --org dev.angga --project-name skeleton --platforms=android,ios,web,macos,windows,linux .` in `skeleton/`. Do not overwrite `assets/fonts/` or `THIRD_PARTY_NOTICES.md`.
@@ -63,7 +63,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `fix(android): allow network access in release builds`
     - _Requirements: 3.1, 3.2_
 
-  - [ ] 1.7 macOS: network client entitlement
+  - [x] 1.7 macOS: network client entitlement
     - Set `com.apple.security.network.client` to `true` in `macos/Runner/DebugProfile.entitlements` and `Release.entitlements`. Add no iOS network configuration.
     - Acceptance: extend `platform_setup_test.dart` to assert both entitlement files, and that `ios/Runner/Info.plist` has no `NSAppTransportSecurity` key. Tests pass.
     - Commit: `fix(macos): add network client entitlement to both configurations`
