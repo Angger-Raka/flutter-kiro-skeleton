@@ -167,3 +167,56 @@ class SurfaceScope extends InheritedWidget {
       palette != oldWidget.palette ||
       shadows != oldWidget.shadows;
 }
+
+/// Paints fill, edge, and drop of a [SurfaceKind] relative to the parent
+/// [SurfaceScope], then gives its children a scope for that kind.
+class TactileSurface extends StatelessWidget {
+  /// Creates a surface.
+  const TactileSurface({
+    required this.kind,
+    required this.child,
+    this.radius,
+    this.padding,
+    super.key,
+  });
+
+  /// Kind of surface to paint.
+  final SurfaceKind kind;
+
+  /// Corner radius. Defaults per kind: none for ground and rail, control for
+  /// well, top-only sheet radius for sheet, container otherwise.
+  final BorderRadius? radius;
+
+  /// Inner padding. None by default.
+  final EdgeInsetsGeometry? padding;
+
+  /// Content drawn on the surface.
+  final Widget child;
+
+  BorderRadius get _defaultRadius => switch (kind) {
+    SurfaceKind.ground || SurfaceKind.rail => BorderRadius.zero,
+    SurfaceKind.well => AppRadius.controlAll,
+    SurfaceKind.sheet => const BorderRadius.vertical(
+      top: Radius.circular(AppRadius.sheet),
+    ),
+    SurfaceKind.panel ||
+    SurfaceKind.raised ||
+    SurfaceKind.overlay => AppRadius.containerAll,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final content = padding == null
+        ? child
+        : Padding(padding: padding!, child: child);
+    final inner = SurfaceScope.of(context).withKind(kind, content);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: inner.fill,
+        borderRadius: radius ?? _defaultRadius,
+        boxShadow: SurfaceShadows.drop(inner),
+      ),
+      child: inner,
+    );
+  }
+}
