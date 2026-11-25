@@ -57,7 +57,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `chore(skeleton): enable very_good_analysis lints`
     - _Requirements: 2.4, 23.1_
 
-  - [ ] 1.6 Android: INTERNET permission and https queries
+  - [x] 1.6 Android: INTERNET permission and https queries
     - Add `<uses-permission android:name="android.permission.INTERNET"/>` to the main `AndroidManifest.xml` (not only debug/profile). Add the url_launcher `<queries>` entry for `https`.
     - Acceptance: a test in `test/platform/platform_setup_test.dart` reads the manifest and asserts the permission and the `https` query. `flutter analyze` and the test pass.
     - Commit: `fix(android): allow network access in release builds`
