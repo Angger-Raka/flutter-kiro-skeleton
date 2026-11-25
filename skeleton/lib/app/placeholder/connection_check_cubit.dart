@@ -26,6 +26,9 @@ class ConnectionCheckCubit extends Cubit<ConnectionCheckState> {
     final result = await guardRepository(
       () => _apiClient.get<void>(_env.healthUrl),
     );
+    if (isClosed) {
+      return;
+    }
     result.fold(
       (failure) {
         _logger.logInfo('Connection check failed: $failure');

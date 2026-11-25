@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -104,4 +106,17 @@ void main() {
     ],
     verify: (_) => verify(() => api.get<void>(any())).called(1),
   );
+
+  test('closing during a check drops the result without throwing', () async {
+    final reply = Completer<Response<void>>();
+    when(() => api.get<void>(any())).thenAnswer((_) => reply.future);
+    final cubit = build();
+
+    final running = cubit.check();
+    await cubit.close();
+    reply.complete(Response<void>(requestOptions: RequestOptions()));
+
+    await expectLater(running, completes);
+    verifyNever(() => logger.logInfo(any()));
+  });
 }
