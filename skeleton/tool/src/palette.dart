@@ -118,7 +118,7 @@ List<Rgb> baseInk(Knobs knobs, {required bool dark}) {
   return _rgbs(dark ? scale.dark : scale.light);
 }
 
-HueData _hue(String name, List<Rgb> ink, {required bool dark}) {
+HueData _hue(String name, List<Rgb> ink, {required bool dark, Rgb? s11}) {
   final scale = radixScales[name]!;
   final steps = _rgbs(dark ? scale.dark : scale.light);
   return HueData(
@@ -127,7 +127,7 @@ HueData _hue(String name, List<Rgb> ink, {required bool dark}) {
     s6: steps[5],
     s9: steps[8],
     s10: steps[9],
-    s11: steps[10],
+    s11: s11 ?? steps[10],
     s12: steps[11],
     contrast: _darkContrastHues.contains(name)
         ? ink[11]
@@ -141,6 +141,7 @@ PaletteData buildPalette(
   Knobs knobs, {
   required bool dark,
   required List<Rgb> ink,
+  Map<String, Rgb> hue11 = const {},
 }) {
   final scale = radixScales[knobs.neutral]!;
   final alpha = dark ? scale.darkAlpha : scale.lightAlpha;
@@ -152,7 +153,7 @@ PaletteData buildPalette(
 
   final hues = {
     for (final role in hueRoleNames)
-      role: _hue(knobs.hues[role]!, ink, dark: dark),
+      role: _hue(knobs.hues[role]!, ink, dark: dark, s11: hue11[role]),
   };
 
   final Rgb primaryBg;
