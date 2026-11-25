@@ -21,7 +21,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
 
 - [ ] 1. Scaffold, toolchain, dependencies, platform setup
 
-  - [ ] 1.1 Create the Flutter project and pin the toolchain
+  - [x] 1.1 Create the Flutter project and pin the toolchain
     - Run `fvm use 3.44.8` inside `skeleton/` to write `skeleton/.fvmrc`, then `flutter create --org dev.angga --project-name skeleton --platforms=android,ios,web,macos,windows,linux .` in `skeleton/`. Do not overwrite `assets/fonts/` or `THIRD_PARTY_NOTICES.md`.
     - Set the Dart SDK constraint in `pubspec.yaml` to a range that includes 3.12.2 (for example `^3.12.0`).
     - Leave the template `lib/main.dart` and `test/widget_test.dart` for now. Both are replaced in 6.7.
