@@ -28,7 +28,9 @@ class TactilePageTransitionsBuilder extends PageTransitionsBuilder {
             AppMotion.d200.inMilliseconds / AppMotion.d300.inMilliseconds,
           )
         : AppMotion.easeOut;
-    final curved = CurvedAnimation(parent: animation, curve: curve);
+    // drive() adds no status listener on the route animation (unlike
+    // CurvedAnimation), so rebuilds do not leak listeners.
+    final curved = animation.drive(CurveTween(curve: curve));
     return FadeTransition(
       opacity: curved,
       child: reduce
