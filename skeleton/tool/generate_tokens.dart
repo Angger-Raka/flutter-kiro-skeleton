@@ -4,6 +4,7 @@
 import 'dart:io';
 
 import 'src/knobs.dart';
+import 'src/ladders.dart';
 import 'src/palette.dart';
 
 /// Default input and output, relative to `skeleton/`.
@@ -50,6 +51,8 @@ String _render(Knobs knobs) {
     "import 'package:flutter/painting.dart';",
     '',
     renderPalette(light, dark),
+    '',
+    renderLadders(knobs.radiusControl),
   ].join('\n');
 }
 
