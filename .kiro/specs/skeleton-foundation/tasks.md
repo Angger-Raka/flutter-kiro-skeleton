@@ -69,7 +69,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `fix(macos): add network client entitlement to both configurations`
     - _Requirements: 3.3, 3.4_
 
-- [ ] 2. Radix scales, tokens file, and the token generator
+- [x] 2. Radix scales, tokens file, and the token generator
 
   - [x] 2.1 Fetch script and checked-in Radix scales
     - Write `tool/radix/fetch_scales.dart` (only `dart:io`, `dart:convert`). It downloads `src/light.ts`, `src/dark.ts` (and the alpha files it needs for a3 and a4) of `radix-ui/colors` at commit `dbdb854` for sand, slate, blue, green, red, and amber, parses the hex values, and writes `tool/radix/radix_scales.dart` with the `RadixScale` class of the design. No colour is typed by hand. Run it once and commit the output.
@@ -151,7 +151,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `feat(tokens): add generated design tokens`
     - _Requirements: 13.3, 13.4, 13.5, 13.10_
 
-- [ ] 3. Layout plumbing and tactile foundation
+- [x] 3. Layout plumbing and tactile foundation
 
   - [x] 3.1 Window class and input mode
     - Create `lib/core/layout/window_class.dart` with `WindowClass`, `InputMode`, `WindowClassX.fromWidth`, and the extensions `context.windowClass` and `context.inputMode`. Use `AppLayout` breakpoints. No `kIsWeb` and no `Platform`.
@@ -182,7 +182,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `feat(theme): add AppTypography and register Inter Medium`
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5, 17.6, 17.7, 17.8_
 
-  - [ ] 3.5 Surface kinds and SurfaceScope
+  - [x] 3.5 Surface kinds and SurfaceScope
     - Create `lib/core/theme/tactile/surface.dart` with `SurfaceKind` (`ground, rail, panel, raised, overlay, sheet, well`) and `SurfaceScope`: working ink steps 1 to 7 per the light remap and dark step-up rules of `04` §5, `line`, `hoverFill` (local ground + 1), `selectedFill` (local ground + 2), and the shadow accessors `button`, `primary`, `toggle`, `badge(hue)`. Steps 8 to 12 are identical everywhere. `SurfaceScope.of` with no ancestor returns the `panel` scope of the current brightness and does not throw.
     - Test (`test/core/theme/surface_scope_test.dart`): for every kind and both brightnesses, steps 8 to 12 equal the ground steps (property 15); `hoverFill != selectedFill` (property 16); the light remap table values for `rail`, `panel`, `overlay`, `sheet`; a widget without an ancestor reads the `panel` scope.
     - Acceptance: tests pass.
@@ -190,58 +190,58 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - _Requirements: 15.1, 15.3, 15.4, 15.5, 15.6, 15.9_
     - _Properties: 15, 16_
 
-  - [ ] 3.6 Shadow selection per surface
+  - [x] 3.6 Shadow selection per surface
     - Create `lib/core/theme/tactile/shadows.dart` with `ShadowRecipe` (using `cssBlurToFlutter`) and the per-surface, per-brightness selection of `List<BoxShadow>` from `AppShadows`. Wire `SurfaceScope` accessors to it. Dark surfaces use one solid 0.5 px outline plus a tight drop as in `04` §5.
     - Test: each recipe resolves to the same list as the generated `AppShadows` for the matching kind and brightness (table); `ShadowRecipe.toBoxShadow` converts blur with the shared function.
     - Acceptance: tests pass.
     - Commit: `feat(theme): resolve shadow recipes per surface and brightness`
     - _Requirements: 15.8_
 
-  - [ ] 3.7 TactileSurface widget
+  - [x] 3.7 TactileSurface widget
     - Add `TactileSurface` to `surface.dart`. It paints fill, edge, and drop relative to the parent `SurfaceScope` and provides a new scope to its children. Radius and padding are optional. No raw colour or size literals.
     - Test (widget): nested `TactileSurface(raised)` inside `panel` gives its child a `raised` scope; the decoration colour equals the scope fill; light and dark both build.
     - Acceptance: tests pass.
     - Commit: `feat(theme): add TactileSurface widget`
     - _Requirements: 15.2_
 
-  - [ ] 3.8 Pressable: press, hover, semantics
+  - [x] 3.8 Pressable: press, hover, semantics
     - Create `lib/core/theme/tactile/pressable.dart`. `pressedScale` is a required parameter with no default. Press scales to it and release returns to 1. Hover shows `SurfaceScope.hoverFill`; on `touch` the hover fill shows while pressed. Button semantics with a label and the enabled state; `onPressed: null` disables it.
     - Test (widget): press and release scale values; hover on a mouse pointer shows the fill; touch press shows the fill; semantics label and enabled flag; disabled ignores taps.
     - Acceptance: tests pass.
     - Commit: `feat(theme): add Pressable with press scale, hover fill, semantics`
     - _Requirements: 16.1, 16.2, 16.5_
 
-  - [ ] 3.9 Pressable: focus ring, hit area, reduced motion
+  - [x] 3.9 Pressable: focus ring, hit area, reduced motion
     - Add the 2 px focus ring with 2 px offset for keyboard focus only. On `touch`, extend the hit area to at least 48 × 48 with a `MinHitArea` render object that pads layout to 48 without changing the visual size. With `reduceMotion`, the widget still works and does not animate travel or blur.
     - Test (widget): ring appears on keyboard focus and not on pointer press; on touch, tapping 4 px outside a 40 px visual still hits; the visual size is unchanged; reduced motion produces no scale animation frames beyond the end state.
     - Acceptance: tests pass.
     - Commit: `feat(theme): add Pressable focus ring, 48 px hit area, reduced motion`
     - _Requirements: 16.3, 16.4, 16.6_
 
-- [ ] 4. Theme mapping
+- [x] 4. Theme mapping
 
-  - [ ] 4.1 `buildTheme`
+  - [x] 4.1 `buildTheme`
     - Create `lib/core/theme/app_theme.dart` with `buildTheme(Brightness, WindowClass, InputMode)` returning `ThemeData` with the mapping of `04` §9: `NoSplash.splashFactory` and transparent highlight, `ColorScheme` (`primary` ink-12, `onPrimary` ink-1, `surface` panel colour, `error` danger-9), `TextTheme`, `InputDecorationTheme`, `TooltipTheme`, `ScrollbarTheme`, `DividerTheme`, `TextSelectionTheme`, `PageTransitionsTheme` (from 3.3, all platforms), `ProgressIndicatorTheme`, and the `AppTypography` extension. No raw colour, size, or duration literals.
     - Test (`test/core/theme/app_theme_test.dart`): the `ColorScheme` mapping for both brightnesses; `splashFactory` is `NoSplash.splashFactory`; the typography extension is present.
     - Acceptance: tests pass.
     - Commit: `feat(theme): add buildTheme mapping tactile tokens to Material`
     - _Requirements: 19.1, 19.2, 19.6, 16.7_
 
-  - [ ] 4.2 Theme context extensions
+  - [x] 4.2 Theme context extensions
     - Create `lib/core/theme/theme_x.dart` with `context.surface`, `context.text`, `context.sizes`, `context.hue(role)`, and `context.reduceMotion` (re-exported from 3.2).
     - Test (widget): each accessor returns the expected object under a `TactileSurface` and under a bare `MaterialApp`.
     - Acceptance: tests pass.
     - Commit: `feat(theme): add context extensions for tokens`
     - _Requirements: 19.3_
 
-  - [ ] 4.3 Theme invariants across brightness
+  - [x] 4.3 Theme invariants across brightness
     - Add a test that builds the theme for light and dark for every `(WindowClass, InputMode)` pair and compares sizes, padding, radii, stroke widths, and text metrics (not colours). Rebuilding for a new window class keeps the same brightness.
     - Acceptance: test passes (property 14).
     - Commit: `test(theme): verify light and dark themes differ only in colour`
     - _Requirements: 15.7, 19.4, 19.5_
     - _Properties: 14_
 
-- [ ] 5. Core infrastructure
+- [x] 5. Core infrastructure
 
   - [x] 5.1 Failure and exceptions
     - Create `lib/core/error/failure.dart` (sealed, `freezed`: `network`, `unauthorized`, `notFound`, `validation`, `server(statusCode)`, `cache`, `unexpected(message)`) and `lib/core/error/exceptions.dart` (`AppException`, `CacheException`, others used by the design).
@@ -330,7 +330,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `feat(l10n): add English and Indonesian foundation strings`
     - _Requirements: 12.1, 12.2, 12.3, 12.5, 12.6_
 
-- [ ] 6. App wiring
+- [x] 6. App wiring
 
   - [x] 6.1 Env and `env/example.json`
     - Create `lib/app/env.dart` with `Env.fromDartDefines()` reading `FLAVOR` (default `dev`), `API_BASE_URL` (default empty), `HEALTH_URL` (default `https://example.com`), and `isProd`. Create `env/example.json` listing all three with safe placeholders.
@@ -367,14 +367,14 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `feat(app): add connection check cubit`
     - _Requirements: 21.8, 21.9, 3.5_
 
-  - [ ] 6.6 Placeholder page
+  - [x] 6.6 Placeholder page
     - Create `lib/app/placeholder/placeholder_page.dart` with a title, the theme group (System, Light, Dark), the locale group (System, English, Indonesia), and the "Check connection" button. Each control is a `Pressable` over a `TactileSurface` (no Material buttons), calls `AppSettingsCubit`, and shows `selectedFill` when selected. Each group has the `SEAM(core-widgets-and-templates): replace with ThemeModeSwitch` comment. The check button is disabled and shows the loading label while the cubit is `loading`, and shows the success message or the localized `Failure` message after. Replace the temporary widget in `routes.dart`.
     - Test (widget, mock cubits, both locales, light and dark): tapping each theme button calls the cubit; the selected control differs from the others; while `loading` the button has `onPressed == null` and shows the loading label; success and failure messages show; the page source contains no `SegmentedButton`, `ElevatedButton`, `TextButton`, or `OutlinedButton`.
     - Acceptance: tests pass.
     - Commit: `feat(app): add placeholder page with theme, locale, and connection controls`
     - _Requirements: 21.3, 21.7, 21.8, 21.9_
 
-  - [ ] 6.7 `App` and `main.dart`
+  - [x] 6.7 `App` and `main.dart`
     - Create `lib/app/app.dart` (`MaterialApp.router`, `themeMode` and `locale` from `AppSettingsCubit`, theme from `buildTheme` rebuilt in `builder:` when `WindowClass` or `InputMode` changes, resolving brightness from `settings.themeMode` and the platform brightness). Unsupported device locales fall back to `en`. `main.dart` calls only `bootstrap()`. Delete the template `test/widget_test.dart` (replaced by this task's test).
     - Test (widget, `test/app/app_test.dart`): defaults follow device brightness and change when the platform brightness changes; selecting Dark then rebuilding `App` over the same store starts in Dark and the same locale (restart survival); device locale `fr` resolves to `en`; resizing the surface across 768 and 1200 rebuilds the theme and keeps the chosen mode; `main.dart` has one statement.
     - Acceptance: tests pass.
@@ -382,7 +382,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - _Requirements: 6.1, 10.3, 10.4, 10.6, 12.4, 19.4, 21.5_
     - _Properties: 4_
 
-- [ ] 7. Branding, splash, and web
+- [x] 7. Branding, splash, and web
 
   - [x] 7.1 Placeholder branding assets
     - Add `assets/branding/icon.png` (1024 × 1024), `icon_foreground.png`, `splash.png`, and `og.png` (1200 × 630). They are plain neutral placeholders, generated by a script or tool of your choice with no new dependency in the repo. Register nothing else in `pubspec.yaml`.
@@ -409,24 +409,24 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `feat(web): add page metadata and Open Graph tags`
     - _Requirements: 4.3, 4.5_
 
-- [ ] 8. Architecture rules and quality gates
+- [x] 8. Architecture rules and quality gates
 
-  - [ ] 8.1 Architecture check test
+  - [x] 8.1 Architecture check test
     - Add `test/architecture/architecture_test.dart` that scans `lib/`: no `features/` import from `core/` (property 19); `GoRoute(` only in `lib/app/router/routes.dart` (property 20); `domain/` imports only the allowed packages (22.2); no `import 'package:dio` in `domain/`; one public class per file; file names are snake_case of the class; no `kIsWeb` or `Platform.` outside `core/layout/` and `app/bootstrap.dart`; no `Color(0x`, `Colors.`, `fontSize:`, `FontWeight.`, `Curves.`, or `Duration(` outside `core/theme/` and `tokens.g.dart`; no `Curves.easeIn`; no `FontWeight.w600` or heavier outside `core/theme/`; `lib/features/` does not exist; the Material button widgets named in 6.6 are absent from `lib/app/`; none of `AdaptiveScaffold`, `AdaptiveBuilder`, `PageColumn`, `AdaptiveGrid`, `ActionGroup` is declared in `lib/`.
     - Acceptance: the test passes on the current tree. A temporary violation in a scratch copy makes it fail (note the check in the commit body).
     - Commit: `test(architecture): enforce layer and token rules in lib`
     - _Requirements: 22.1, 22.2, 22.3, 22.4, 22.6, 17.9, 18.7, 20.5, 20.6_
     - _Properties: 19, 20_
 
-  - [ ] 8.2 Quality gates in one script
+  - [x] 8.2 Quality gates in one script
     - Add `tool/check.dart` (or `tool/check.sh`) that runs, in order: `dart format --set-exit-if-changed .`, `dart run build_runner build -d`, `flutter analyze`, `flutter test`, and fails on the first failure. Run it and record the output summary.
     - Acceptance: the script exits 0. `flutter analyze` reports zero issues and `flutter test` passes. No golden or stress test exists (`find test -name '*golden*'` is empty). A checklist in the commit body maps each test file to requirement 23.4 (AppSettingsCubit 5.9, guardRepository and mapper 5.7, formatters 5.10, window class and input mode 3.1, blur 2.3, generator gate failure 2.9) and 23.5 (properties 1 to 10, 17, 18 as `kiri_check` tests in 2.3, 3.1, 5.7, 5.8, 5.9).
     - Commit: `chore(skeleton): add quality gate script`
     - _Requirements: 23.1, 23.2, 23.3, 23.4, 23.5, 23.6_
 
-- [ ] 9. Documentation
+- [x] 9. Documentation
 
-  - [ ] 9.1 Skeleton README
+  - [x] 9.1 Skeleton README
     - Write `skeleton/README.md`: pinned Flutter 3.44.8 and Dart 3.12.2 with the reason for the difference from the brief's "3.50"; a table of exact package versions (from 1.4); `minSdk` and iOS deployment target of the template; how to run (`fvm`, `build_runner`, `gen-l10n`, `dart run tool/generate_tokens.dart`, `--dart-define-from-file=env/example.json`); the generated-file policy (what is committed, what is ignored); `json_serializable` deferred; only Inter registered; deviations from `03` §4 (Logger in `core/log/`, the placeholder folder `app/placeholder/`, `blur_conversion.dart`, `tool/src/`); the placeholder page and its seams.
     - Acceptance: a test (`test/docs/readme_test.dart`) asserts the README mentions `3.44.8`, `3.12.2`, and every package name in `pubspec.yaml` `dependencies` and `dev_dependencies`, with the version string from `pubspec.yaml`.
     - Commit: `docs(skeleton): add README with pinned versions and policies`
