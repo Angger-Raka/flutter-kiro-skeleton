@@ -59,7 +59,7 @@ Future<void> _writeAtomically(String path, String content) async {
   final tmp = File('$path.tmp');
   await tmp.parent.create(recursive: true);
   await tmp.writeAsString(content);
-  final fmt = await Process.run(Platform.resolvedExecutable, [
+  final fmt = await Process.run(_dart, [
     'format',
     tmp.path,
   ]);
@@ -77,3 +77,9 @@ Future<void> main() async {
     stdout: stdout,
   );
 }
+
+/// `dart` itself under `dart run`; the PATH one when called from a test
+/// (where the executable is flutter_tester).
+final String _dart = Platform.resolvedExecutable.endsWith('/dart')
+    ? Platform.resolvedExecutable
+    : 'dart';
