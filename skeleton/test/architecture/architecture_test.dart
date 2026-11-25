@@ -340,6 +340,10 @@ final _tokenLiterals = <String, RegExp>{
   'FontWeight.': RegExp(r'\bFontWeight\.'),
   'Curves.': RegExp(r'\bCurves\.'),
   'Duration(': RegExp(r'\bDuration\('),
+  'Color.fromARGB(': RegExp(r'\bColor\.fromARGB\('),
+  'Color.fromRGBO(': RegExp(r'\bColor\.fromRGBO\('),
+  'Cubic(': RegExp(r'\bCubic\('),
+  'Interval(': RegExp(r'\bInterval\('),
 };
 
 List<String> _noRawTokensOutsideTheme(String rel, String src) {
@@ -366,13 +370,36 @@ List<String> _noEaseInOrHeavyWeight(String rel, String src) {
   return out;
 }
 
+/// Material controls and ink widgets. `lib/app` draws interaction with
+/// `Pressable` and `TactileSurface` instead (Req 21.7).
+const _materialControls = [
+  'SegmentedButton',
+  'ElevatedButton',
+  'TextButton',
+  'OutlinedButton',
+  'FilledButton',
+  'IconButton',
+  'FloatingActionButton',
+  'MaterialButton',
+  'ToggleButtons',
+  'InkWell',
+  'InkResponse',
+  'Switch',
+  'Checkbox',
+  'Radio',
+  'Slider',
+  'Chip',
+  'ActionChip',
+  'ChoiceChip',
+  'FilterChip',
+];
+
+final _materialControl = RegExp('\\b(?:${_materialControls.join('|')})\\b');
+
 List<String> _noMaterialButtonsInApp(String rel, String src) {
   if (!_under(rel, 'app')) return [];
-  return RegExp(
-        r'\b(?:SegmentedButton|ElevatedButton|TextButton|OutlinedButton)\b',
-      ).hasMatch(_code(src))
-      ? ['$rel: Material button widget in lib/app']
-      : [];
+  final m = _materialControl.firstMatch(_code(src));
+  return m != null ? ['$rel: Material control ${m[0]} in lib/app'] : [];
 }
 
 const _reservedNames = [
@@ -405,7 +432,8 @@ final _checks = <String, _Check>{
       _noRawTokensOutsideTheme,
   'no Curves.easeIn*, no FontWeight 600+ outside theme (17.9, 18.7)':
       _noEaseInOrHeavyWeight,
-  'no Material button widgets in lib/app (21.7)': _noMaterialButtonsInApp,
+  'no Material controls or ink widgets in lib/app (21.7)':
+      _noMaterialButtonsInApp,
   'no reserved layout widget declared (20.6)': _noReservedDeclarations,
 };
 
@@ -549,6 +577,10 @@ void main() {
         'final w = FontWeight.w500;',
         'final c = Curves.easeOut;',
         'const d = Duration(seconds: 1);',
+        'const c = Color.fromARGB(255, 0, 0, 0);',
+        'const c = Color.fromRGBO(0, 0, 0, 1);',
+        'const c = Cubic(0.2, 0, 0, 1);',
+        'const i = Interval(0, 0.5);',
       ]) {
         fails(_noRawTokensOutsideTheme, 'core/x.dart', s);
       }
@@ -604,6 +636,19 @@ void main() {
 
     test('Material buttons and reserved names', () {
       fails(_noMaterialButtonsInApp, 'app/x.dart', 'TextButton(a);');
+      for (final s in [
+        'FilledButton(onPressed: f, child: c)',
+        'IconButton(onPressed: f, icon: i)',
+        'InkWell(onTap: f, child: c)',
+        'Switch(value: v, onChanged: f)',
+      ]) {
+        fails(_noMaterialButtonsInApp, 'app/x.dart', s);
+      }
+      passes(
+        _noMaterialButtonsInApp,
+        'app/x.dart',
+        'final t = FilledButtonThemeData(); // InkWell',
+      );
       passes(_noMaterialButtonsInApp, 'core/x.dart', 'TextButton(a);');
       fails(
         _noReservedDeclarations,
