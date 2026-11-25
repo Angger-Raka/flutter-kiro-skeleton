@@ -56,6 +56,16 @@ class _PressableState extends State<Pressable> {
 
   bool get _enabled => widget.onPressed != null;
 
+  @override
+  void didUpdateWidget(Pressable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Disabled controls get no tap-up/cancel/exit to clear these.
+    if (widget.onPressed == null) {
+      _pressed = false;
+      _hovered = false;
+    }
+  }
+
   void _setPressed({required bool value}) {
     if (_pressed != value) setState(() => _pressed = value);
   }

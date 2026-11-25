@@ -166,6 +166,20 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('disabling while pressed clears the pressed state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host(pressable(onPressed: () {})));
+    final g = await tester.startGesture(tester.getCenter(find.byKey(_leaf)));
+    await tester.pump();
+    expect(scaleOf(tester), 0.97);
+    await tester.pumpWidget(host(pressable()));
+    await g.up();
+    await tester.pumpWidget(host(pressable(onPressed: () {})));
+    await tester.pumpAndSettle();
+    expect(scaleOf(tester), 1);
+  });
+
   testWidgets('disabled ignores taps and press', (tester) async {
     await tester.pumpWidget(host(pressable()));
     final g = await tester.startGesture(tester.getCenter(find.byKey(_leaf)));
