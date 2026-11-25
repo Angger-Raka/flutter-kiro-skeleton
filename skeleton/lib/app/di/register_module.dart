@@ -3,6 +3,12 @@ import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeleton/app/env.dart';
 
+/// How long the HTTP client waits to connect before giving up.
+const connectTimeout = Duration(seconds: 15);
+
+/// How long the HTTP client waits for response data before giving up.
+const receiveTimeout = Duration(seconds: 15);
+
 /// Registrations for types the app does not own.
 @module
 abstract class RegisterModule {
@@ -17,5 +23,11 @@ abstract class RegisterModule {
 
   /// The HTTP client that `ApiClient` wraps.
   @lazySingleton
-  Dio dio(Env env) => Dio(BaseOptions(baseUrl: env.apiBaseUrl));
+  Dio dio(Env env) => Dio(
+    BaseOptions(
+      baseUrl: env.apiBaseUrl,
+      connectTimeout: connectTimeout,
+      receiveTimeout: receiveTimeout,
+    ),
+  );
 }

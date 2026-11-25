@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeleton/app/di/injection.dart';
+import 'package:skeleton/app/di/register_module.dart';
 import 'package:skeleton/app/env.dart';
 import 'package:skeleton/core/log/logger.dart';
 import 'package:skeleton/core/network/api_client.dart';
@@ -29,6 +30,13 @@ void main() {
   test('configureDependencies resolves every registration', () async {
     await configureDependencies();
     _expectResolved();
+  });
+
+  test('Dio has the connect and receive timeouts', () async {
+    await configureDependencies();
+    final options = getIt<Dio>().options;
+    expect(options.connectTimeout, connectTimeout);
+    expect(options.receiveTimeout, receiveTimeout);
   });
 
   test('a second call succeeds after resetDependencies', () async {
