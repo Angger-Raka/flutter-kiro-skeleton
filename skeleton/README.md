@@ -46,6 +46,9 @@ All versions are exact and come from `pubspec.yaml`. `pubspec.lock` is committed
 | `shared_preferences` | `2.5.6` |
 | `url_launcher` | `6.3.3` |
 
+`bloc_concurrency` and `lucide_icons_flutter` are required by Req 2.1 but not
+used yet: no file in `lib/`, `test/` or `tool/` imports them.
+
 ### dev_dependencies
 
 | Package | Version |
