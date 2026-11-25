@@ -71,7 +71,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
 
 - [ ] 2. Radix scales, tokens file, and the token generator
 
-  - [ ] 2.1 Fetch script and checked-in Radix scales
+  - [x] 2.1 Fetch script and checked-in Radix scales
     - Write `tool/radix/fetch_scales.dart` (only `dart:io`, `dart:convert`). It downloads `src/light.ts`, `src/dark.ts` (and the alpha files it needs for a3 and a4) of `radix-ui/colors` at commit `dbdb854` for sand, slate, blue, green, red, and amber, parses the hex values, and writes `tool/radix/radix_scales.dart` with the `RadixScale` class of the design. No colour is typed by hand. Run it once and commit the output.
     - Write `tool/radix/README.md` (source repository, commit, how to re-run). Add Radix Colors (MIT) with the commit to `THIRD_PARTY_NOTICES.md` without changing the existing entries.
     - Test (`test/tool/radix_scales_test.dart`): every scale has 12 light and 12 dark values matching `#rrggbb`, plus a3 and a4 for both brightnesses.
@@ -79,13 +79,13 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `feat(tokens): add Radix scale fetcher and checked-in scales`
     - _Requirements: 13.2, 1.7_
 
-  - [ ] 2.2 Write `design/tokens.yaml`
+  - [x] 2.2 Write `design/tokens.yaml`
     - Use the default of the design: `neutral: sand`, hues accent blue, success green, danger red, warning amber, info blue, `identity: []`, `primary: neutral`, Inter Medium as sans (weight 500), `heading: null`, `mono: null`, `size_factor: 1.0`, tracking, `radius_control: 6`, `contrast.tune_faint_text: true`, `overrides: {}`.
     - Acceptance: the file parses with `package:yaml` in a test (`test/tool/tokens_yaml_test.dart`) and every named scale exists in `radixScales`.
     - Commit: `feat(tokens): add default design tokens file`
     - _Requirements: 13.1_
 
-  - [ ] 2.3 Blur conversion as pure Dart
+  - [x] 2.3 Blur conversion as pure Dart
     - Create `lib/core/theme/tactile/blur_conversion.dart` with `double cssBlurToFlutter(double cssBlur)` = `max(0, (cssBlur / 2 - 0.5) / 0.57735)`. It imports only `dart:math`, so both the generator and `shadows.dart` can import it (see S2 gap G1).
     - Test (`test/core/theme/blur_conversion_test.dart`) with `kiri_check`: property 8 (formula and result ≥ 0), property 9 (`0` gives `0`), property 10 (monotonic). Add a table of known values.
     - Acceptance: tests pass, 100 or more generated cases per property.
@@ -93,42 +93,42 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - _Requirements: 14.1, 14.2, 14.3_
     - _Properties: 8, 9, 10_
 
-  - [ ] 2.4 Colour maths for the generator
+  - [x] 2.4 Colour maths for the generator
     - Create `tool/src/color_math.dart`: hex parse and format, sRGB to OKLab and OKLCH and back, OKLab mix, WCAG relative luminance and contrast ratio. Pure Dart.
     - Test (`test/tool/color_math_test.dart`): known pairs (black on white is 21:1, same colour is 1:1), round trip hex to OKLCH to hex within one unit per channel, and mix at 0 and 1.
     - Acceptance: tests pass.
     - Commit: `feat(tokens): add colour maths for the token generator`
     - _Requirements: 13.7, 14.5_
 
-  - [ ] 2.5 Generator skeleton: read inputs and validate hues
+  - [x] 2.5 Generator skeleton: read inputs and validate hues
     - Create `tool/generate_tokens.dart` with `main` calling a testable `Future<int> runGenerator({yamlPath, outputPath, stdout})`. It parses the YAML and resolves the neutral and each hue in `radixScales`. A name outside the set (including in `identity`) prints a message that points to `kit tokens`, returns a non-zero code, and does not touch the output file. Write the output atomically (write to a temp file, then rename) so a failure leaves the old file unchanged.
     - Test (`test/tool/generate_tokens_validation_test.dart`): an unknown neutral and an unknown hue return non-zero with the output file unchanged (checksum before and after). `identity: []` is accepted.
     - Acceptance: tests pass.
     - Commit: `feat(tokens): add generator entry point and hue validation`
     - _Requirements: 13.6_
 
-  - [ ] 2.6 Generator: palette, hues, and primary
+  - [x] 2.6 Generator: palette, hues, and primary
     - Emit `AppPalette.light` and `AppPalette.dark` (ink ramp, alpha a3 and a4, ground, panel, raised, overlay, well, primary background, foreground, hover with the 93%/7% OKLab mix), `HueScale`, `HueRole`, and an empty `identity` list. Follow `04` §4.2 for the derived surfaces.
     - Test (`test/tool/generate_tokens_palette_test.dart`): run on the default YAML into a temp file. Assert the output contains `AppPalette`, both brightness constants, five hue roles, and `identity: []`. Assert the header marks the file as generated.
     - Acceptance: tests pass. The temp output is valid Dart (`dart analyze` on it in the test).
     - Commit: `feat(tokens): generate palette, hue scales, and primary colours`
     - _Requirements: 13.3_
 
-  - [ ] 2.7 Generator: ladders, sizes, and layout
+  - [x] 2.7 Generator: ladders, sizes, and layout
     - Emit `AppSpace`, `AppRadius` (derived from `radius_control`), `AppStroke`, `AppSizeSet.pointer` and `AppSizeSet.touch`, and `AppLayout` (768, 1200, 800, 1200, 440, 256, 72, 52, 56, 8). Use the values of `04` §4.2.
     - Test: radius ladder for `radius_control: 6` and for another value (table). `AppLayout` constants match requirement 20.4 exactly.
     - Acceptance: tests pass.
     - Commit: `feat(tokens): generate spacing, radius, sizes, and layout tokens`
     - _Requirements: 13.3, 20.4_
 
-  - [ ] 2.8 Generator: shadow recipes
+  - [x] 2.8 Generator: shadow recipes
     - Add the CSS shadow recipes of `04` §4.5 as data in `tool/src/shadow_recipes.dart`. Convert each blur with `cssBlurToFlutter`, keep offsets and spread, and emit rings as zero-blur spread shadows. Emit `AppShadows.light` and `AppShadows.dark` for button, primary, toggle, card, table, panel, menu, popover, modal, and badge.
     - Test: a ring recipe gives `blurRadius: 0`; a recipe with blur 10 gives the converted radius; offsets and spread are unchanged.
     - Acceptance: tests pass.
     - Commit: `feat(tokens): generate shadow lists with blur conversion`
     - _Requirements: 13.3, 14.1, 14.4_
 
-  - [ ] 2.9 Generator: contrast gates
+  - [x] 2.9 Generator: contrast gates
     - Implement every Contrast_Gate of `04` §4.6 for both themes in `tool/src/contrast_gates.dart` with the minimums given there. A failing gate prints the pair and its ratio, returns non-zero, and leaves the output unchanged. All gates passing returns 0.
     - Test (`test/tool/contrast_gates_test.dart`): the default YAML passes (exit code 0). A fixture YAML with `tune_faint_text: false` and a hue pair that fails a gate (for example a low-contrast override) returns non-zero, prints the pair, and leaves the output checksum unchanged.
     - Acceptance: tests pass. Record in the PR notes whether the default passes without tuning.
@@ -136,15 +136,15 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - _Requirements: 14.5, 14.6, 14.7_
     - _Properties: 11, 12_
 
-  - [ ] 2.10 Generator: faint-text tuning and overrides
-    - When `tune_faint_text` is true, adjust only the OKLCH lightness of ink-9 and ink-10 until their gates pass, and print each adjustment. Print every applied `overrides` entry. Do not write `docs/DESIGN_TOKENS.md`.
-    - Test (`test/tool/faint_text_tuning_test.dart`): hue and chroma of ink-9 and ink-10 are equal before and after (within 1e-6). Adjusted colours pass the gate. Stdout lists each adjustment and each override. No `docs/DESIGN_TOKENS.md` exists after a run.
+  - [x] 2.10 Generator: faint-text tuning and overrides
+    - When `tune_faint_text` is true, adjust only the OKLCH lightness of ink-9 and ink-10, and of hue-11 where the 4.5:1 gate on hue-3 fails (hue and chroma unchanged), until their gates pass, and print each adjustment. Print every applied `overrides` entry. Do not write `docs/DESIGN_TOKENS.md`.
+    - Test (`test/tool/faint_text_tuning_test.dart`): hue and chroma of ink-9, ink-10, and tuned hue-11 are equal before and after (within 1e-6). Adjusted colours pass the gate. Stdout lists each adjustment and each override. No `docs/DESIGN_TOKENS.md` exists after a run.
     - Acceptance: tests pass.
     - Commit: `feat(tokens): tune faint text lightness and print overrides`
     - _Requirements: 13.7, 13.8, 13.9_
     - _Properties: 13_
 
-  - [ ] 2.11 Generate and commit `tokens.g.dart`
+  - [x] 2.11 Generate and commit `tokens.g.dart`
     - Run `dart run tool/generate_tokens.dart`, check that the output compiles, and commit `lib/core/theme/tokens.g.dart`. The output contract (file name, class names, shape) stays compatible with `04` §4.2.
     - Test (`test/tool/generate_tokens_determinism_test.dart`): two runs with the same inputs produce byte-identical files, and the committed file equals a fresh run.
     - Acceptance: tests pass, `flutter analyze` is clean, and `git ls-files lib/core/theme/tokens.g.dart` lists the file.
@@ -153,7 +153,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
 
 - [ ] 3. Layout plumbing and tactile foundation
 
-  - [ ] 3.1 Window class and input mode
+  - [x] 3.1 Window class and input mode
     - Create `lib/core/layout/window_class.dart` with `WindowClass`, `InputMode`, `WindowClassX.fromWidth`, and the extensions `context.windowClass` and `context.inputMode`. Use `AppLayout` breakpoints. No `kIsWeb` and no `Platform`.
     - Test (`test/core/layout/window_class_test.dart`) with `kiri_check`: property 17 over random widths, plus the boundaries 767.99, 768, 1199.99, 1200. Property 18 over every `TargetPlatform` with `debugDefaultTargetPlatformOverride`.
     - Acceptance: tests pass.
@@ -161,21 +161,21 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - _Requirements: 20.1, 20.2, 20.3, 20.5_
     - _Properties: 17, 18_
 
-  - [ ] 3.2 Motion tokens and springs
+  - [x] 3.2 Motion tokens and springs
     - Create `lib/core/theme/tactile/motion.dart` with `AppMotion` (curves `easeOut`, `easeMove`, `easeDrawer`, `easeInOut` and the durations 80, 120, 150, 200, 240, 300, 320 ms from `04` §8) and `AppSprings` (`toggle`, `knob`, `reveal`). Check whether Flutter 3.44.8 has `SpringDescription.withDurationAndBounce` (S15). If yes use it, otherwise use `mass 1, stiffness (2π/d)², damping 4π(1−bounce)/d`. Add `context.reduceMotion` as `MediaQuery.disableAnimationsOf(context)` in `theme_x.dart`'s file later (4.2); here add a standalone extension in `motion.dart` that 4.2 re-exports.
     - Test: duration and curve table; spring values for the three springs; `reduceMotion` returns true under `MediaQuery(disableAnimations: true)`.
     - Acceptance: tests pass. The S15 result is noted in the task commit body.
     - Commit: `feat(theme): add motion tokens and springs`
     - _Requirements: 18.1, 18.2, 18.3, 18.5_
 
-  - [ ] 3.3 Page transition
+  - [x] 3.3 Page transition
     - Add the page entrance (fade and 16 px rise, 300 ms, on route mount only) as a `PageTransitionsBuilder` used for every platform. With `reduceMotion` it becomes a 150 to 200 ms crossfade with no travel.
     - Test (widget): normal motion shows an offset at the start of the transition; reduced motion shows none.
     - Acceptance: tests pass.
     - Commit: `feat(theme): add page entrance transition with reduced motion`
     - _Requirements: 18.4, 18.6_
 
-  - [ ] 3.4 Typography and Inter registration
+  - [x] 3.4 Typography and Inter registration
     - Register `assets/fonts/Inter-Medium.ttf` in `pubspec.yaml` (not the other two faces). Create `lib/core/theme/tactile/typography.dart` with the `AppTypography` ThemeExtension: roles `display, figure, section, title, body, description, meta, label, field, badge` with sizes, line heights, tracking, and ink steps from `04` §6.1. One weight from the tokens file. Flutter `height = lineHeight / fontSize` with `leadingDistribution: even`. Tabular figures on `figure` and amount roles. Mobile sizes for `mobile`, desktop sizes otherwise. `field` is 16/24 on touch. With `typography.heading` null, every role uses the sans face.
     - Test (`test/core/theme/typography_test.dart`): table of every role for mobile and desktop; all roles share one weight; `height` equals lineHeight over size; tabular figures present on `figure`; `field` on touch is 16/24.
     - Acceptance: tests pass.
@@ -243,57 +243,57 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
 
 - [ ] 5. Core infrastructure
 
-  - [ ] 5.1 Failure and exceptions
+  - [x] 5.1 Failure and exceptions
     - Create `lib/core/error/failure.dart` (sealed, `freezed`: `network`, `unauthorized`, `notFound`, `validation`, `server(statusCode)`, `cache`, `unexpected(message)`) and `lib/core/error/exceptions.dart` (`AppException`, `CacheException`, others used by the design).
     - Test: constructing each case, equality, and `switch` exhaustiveness (compiles without default).
     - Acceptance: build_runner and tests pass.
     - Commit: `feat(core): add Failure and exception types`
     - _Requirements: 8.1_
 
-  - [ ] 5.2 UseCase contract
+  - [x] 5.2 UseCase contract
     - Create `lib/core/usecase/usecase.dart` with `UseCase<Type, Params>` returning `Future<Either<Failure, Type>>` (fpdart) and `NoParams`.
     - Test: a fake use case returns `Right` and `Left`.
     - Acceptance: tests pass.
     - Commit: `feat(core): add UseCase contract`
     - _Requirements: 8.2_
 
-  - [ ] 5.3 Logger with redaction
+  - [x] 5.3 Logger with redaction
     - Create `lib/core/log/logger.dart` (`@lazySingleton`) with `logError`, `logFlutterError`, `logInfo`, and a pure `redact(String)` that masks `Authorization` header values, bearer tokens, and `password` and `token` fields. Output uses `debugPrint`.
     - Test (`test/core/log/logger_test.dart`): table of inputs for `redact` (header, bearer, JSON password, token query value, plain text untouched). Logging an error whose message holds a bearer token prints the masked text.
     - Acceptance: tests pass.
     - Commit: `feat(core): add Logger with redaction`
     - _Requirements: 6.6_
 
-  - [ ] 5.4 KeyValueStore
+  - [x] 5.4 KeyValueStore
     - Create `lib/core/storage/key_value_store.dart`: `KeyValueStore` interface (`getString`, `setString`, `remove`) and a `shared_preferences` implementation. No `shared_preferences` type in the interface. A failed write throws `CacheException`. Add an in-memory fake in `test/support/in_memory_key_value_store.dart` for tests.
     - Test (`SharedPreferences.setMockInitialValues`): read, write, remove; a write that returns false throws `CacheException`.
     - Acceptance: tests pass.
     - Commit: `feat(core): add KeyValueStore over shared_preferences`
     - _Requirements: 9.1, 9.2_
 
-  - [ ] 5.5 LinkLauncher and ClipboardService
+  - [x] 5.5 LinkLauncher and ClipboardService
     - Create `lib/core/services/link_launcher.dart` (`canLaunchUrl` then `launchUrl`, returns false when it cannot launch) and `clipboard_service.dart`.
     - Test: `ClipboardService.copy` through the mocked platform channel; `LinkLauncher.open` with a mocked `UrlLauncherPlatform` for true and false.
     - Acceptance: tests pass.
     - Commit: `feat(core): add LinkLauncher and ClipboardService`
     - _Requirements: 9.3, 9.4_
 
-  - [ ] 5.6 ApiClient and auth interceptor
+  - [x] 5.6 ApiClient and auth interceptor
     - Create `lib/core/network/api_client.dart` (single `Dio`, `get`/`post`/`put`/`delete`, accepts absolute URLs) and `interceptors/auth_interceptor.dart` (no-op, documented extension point). `domain/` does not import `dio` (checked in 8.1).
     - Test (a fake `HttpClientAdapter` written with `mocktail`, no new package): a request passes through the no-op interceptor unchanged; an absolute URL overrides `baseUrl`.
     - Acceptance: tests pass.
     - Commit: `feat(core): add ApiClient and no-op auth interceptor`
     - _Requirements: 8.3_
 
-  - [ ] 5.7 `guardRepository` and Dio error mapping
-    - Create `lib/core/network/dio_error_mapper.dart` with `guardRepository`, `mapDioException`, `mapAppException`, and `_mapStatus` exposed for tests via `@visibleForTesting` (401 and 403 unauthorized, 404 notFound, 422 validation, others server with status; 4xx and 5xx give different subtypes).
+  - [x] 5.7 `guardRepository` and Dio error mapping
+    - Create `lib/core/network/dio_error_mapper.dart` with `guardRepository`, `mapDioException`, `mapAppException`, and `mapStatus` (public, `@visibleForTesting`) (401 and 403 unauthorized, 404 notFound, 422 validation, every other status `server(statusCode)`).
     - Test (`test/core/network/dio_error_mapper_test.dart`) with `kiri_check`: property 5 (never throws for any thrown object), property 6 (status mapping for every integer 100 to 599), property 7 (the four connectivity `DioExceptionType`s give `network`). Add a table for `badResponse` without a status and `cancel`.
     - Acceptance: tests pass.
     - Commit: `feat(core): add guardRepository and Dio error mapper`
     - _Requirements: 8.4, 8.5, 8.6, 8.7_
     - _Properties: 5, 6, 7_
 
-  - [ ] 5.8 AppSettings model
+  - [x] 5.8 AppSettings model
     - Create `lib/core/settings/app_settings.dart` (`freezed`; `AppThemeMode` system, light, dark; `AppLocale` system, en, id; defaults system and system; `flutterThemeMode`; `flutterLocale` returning null for `system`).
     - Test with `kiri_check`: property 4 for every enum value; defaults.
     - Acceptance: build_runner and tests pass.
@@ -301,7 +301,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - _Requirements: 10.1, 10.2, 10.3_
     - _Properties: 4_
 
-  - [ ] 5.9 AppSettingsCubit
+  - [x] 5.9 AppSettingsCubit
     - Create `lib/core/settings/app_settings_cubit.dart`. `load()` reads two keys, parses by enum name, and falls back to `system` for unknown or missing. `setThemeMode` and `setLocale` emit first and then save through `KeyValueStore`. A `CacheException` keeps the state and does not crash.
     - Test (`bloc_test` and `kiri_check` over `InMemoryKeyValueStore`): property 1 (empty store gives defaults), property 2 (write, new cubit, load, same values for all 9 combinations), property 3 (any string not an enum name gives `system`), save failure keeps the in-memory value.
     - Acceptance: tests pass.
@@ -309,21 +309,21 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - _Requirements: 10.5, 10.6, 10.7, 10.8, 10.9_
     - _Properties: 1, 2, 3_
 
-  - [ ] 5.10 Formatters
+  - [x] 5.10 Formatters
     - Create `lib/core/utils/formatters.dart` (`AppFormatters(locale)`: `date`, `number`, `money` omitting decimals for whole amounts, `compact` for numbers above six digits, `enDashIfNull`).
     - Test (table, `en` and `id`): money with and without decimals, compact `1,2 jt` and `1.2M`, null gives an en dash, date in both locales.
     - Acceptance: tests pass.
     - Commit: `feat(core): add locale-aware formatters`
     - _Requirements: 11.1, 11.2, 11.3, 11.4_
 
-  - [ ] 5.11 Debouncer and extensions
+  - [x] 5.11 Debouncer and extensions
     - Create `lib/core/utils/debouncer.dart` and `lib/core/utils/extensions.dart` (small non-visual helpers the foundation uses, nothing speculative).
     - Test (`testWidgets` with `tester.pump(duration)`): rapid calls collapse to one; `dispose` cancels.
     - Acceptance: tests pass.
     - Commit: `feat(core): add Debouncer and extensions`
     - _Requirements: 11.5_
 
-  - [ ] 5.12 Localization
+  - [x] 5.12 Localization
     - Add `l10n.yaml`, `lib/core/l10n/app_en.arb` (template) and `app_id.arb` with only the strings the foundation shows (requirement 12.3). Sentence case, no em dashes, loading labels end with "…". Add `context.l10n` extension. Commit the `gen-l10n` output.
     - Test (`test/core/l10n/arb_test.dart`): `en` and `id` have the same keys; no value contains an em dash; every key ending in `Loading` or starting with `loading` ends with "…"; `context.l10n.<key>` resolves in both locales.
     - Acceptance: `flutter gen-l10n` succeeds and tests pass.
@@ -332,35 +332,35 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
 
 - [ ] 6. App wiring
 
-  - [ ] 6.1 Env and `env/example.json`
+  - [x] 6.1 Env and `env/example.json`
     - Create `lib/app/env.dart` with `Env.fromDartDefines()` reading `FLAVOR` (default `dev`), `API_BASE_URL` (default empty), `HEALTH_URL` (default `https://example.com`), and `isProd`. Create `env/example.json` listing all three with safe placeholders.
     - Test: defaults when no define is passed (does not throw); `env/example.json` keys equal the keys `Env` reads.
     - Acceptance: tests pass. Run `flutter test --dart-define=HEALTH_URL=https://a.test` once in the task notes to prove the override.
     - Commit: `feat(app): add Env with dart-define configuration`
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 21.10_
 
-  - [ ] 6.2 Dependency injection
+  - [x] 6.2 Dependency injection
     - Create `lib/app/di/injection.dart` (`@InjectableInit`, `configureDependencies()`, `resetDependencies()`) and `register_module.dart` (`SharedPreferences` with `@preResolve`, `Dio`, `Env`). Annotate `Logger`, `ApiClient`, `KeyValueStore` impl, `AppSettingsCubit`, `LinkLauncher`, and `ClipboardService`. Run build_runner and commit `injection.config.dart`.
     - Test (`test/app/di/injection_test.dart`): after `SharedPreferences.setMockInitialValues`, `configureDependencies()` resolves the seven registrations; after `resetDependencies()` a second call succeeds.
     - Acceptance: tests pass and `build_runner build -d` is clean.
     - Commit: `feat(app): add dependency injection root`
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-  - [ ] 6.3 Bloc observer and bootstrap
+  - [x] 6.3 Bloc observer and bootstrap
     - Create `lib/app/app_bloc_observer.dart` and `lib/app/bootstrap.dart`: bindings, `Env`, `Logger`, `FlutterError.onError`, `PlatformDispatcher.instance.onError` (returns `true`), `Bloc.observer`, then `configureDependencies()`, then `runApp`. Keep the handlers as small testable functions.
     - Test: invoking the installed `FlutterError.onError` and `PlatformDispatcher` handlers calls the logger and does not throw; the observer's `onError` calls the logger; the platform handler returns `true`.
     - Acceptance: tests pass.
     - Commit: `feat(app): add bootstrap, error handlers, and bloc observer`
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-  - [ ] 6.4 Routes and thin shell
+  - [x] 6.4 Routes and thin shell
     - Create `lib/app/router/route_names.dart`, `routes.dart` (the only `GoRoute`, a `ShellRoute` with a root route that builds `PlaceholderPage`; use a temporary `SizedBox` here and replace in 6.6) and `app_shell.dart` (a thin `Scaffold` with `SafeArea`, no rail, tab bar, or panel, with the `TODO(core-widgets-and-templates)` seam).
     - Test (widget): the root route renders inside `AppShell`; `AppShell` source has no `NavigationRail`, `NavigationBar`, or `BottomNavigationBar` (string check).
     - Acceptance: tests pass.
     - Commit: `feat(app): add router and thin app shell`
     - _Requirements: 21.1, 21.2, 21.3, 21.4, 21.6_
 
-  - [ ] 6.5 ConnectionCheckCubit
+  - [x] 6.5 ConnectionCheckCubit
     - Create `lib/app/placeholder/connection_check_cubit.dart` and `connection_check_state.dart` (`idle`, `loading`, `success`, `failure(Failure)`). `check()` ignores calls while `loading`; otherwise emits `loading`, calls `guardRepository(() => apiClient.get(env.healthUrl))`, logs failures through `Logger`, and emits `success` or `failure`. Register it with `@injectable`.
     - Test (`bloc_test`, mock `ApiClient`): success; each `Failure` subtype; two `check()` calls in a row send one request.
     - Acceptance: tests pass.
@@ -384,25 +384,25 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
 
 - [ ] 7. Branding, splash, and web
 
-  - [ ] 7.1 Placeholder branding assets
+  - [x] 7.1 Placeholder branding assets
     - Add `assets/branding/icon.png` (1024 × 1024), `icon_foreground.png`, `splash.png`, and `og.png` (1200 × 630). They are plain neutral placeholders, generated by a script or tool of your choice with no new dependency in the repo. Register nothing else in `pubspec.yaml`.
     - Acceptance: a test (`test/platform/branding_assets_test.dart`) reads the PNG headers and asserts the four files exist with the expected sizes.
     - Commit: `chore(skeleton): add placeholder branding assets`
     - _Requirements: 4.1_
 
-  - [ ] 7.2 Launcher icons
+  - [x] 7.2 Launcher icons
     - Configure `flutter_launcher_icons` (in `pubspec.yaml` or `flutter_launcher_icons.yaml`) for Android (adaptive), iOS, web, macOS, Windows. Run `dart run flutter_launcher_icons` and commit the generated platform files.
     - Acceptance: the generated icons exist under `android/app/src/main/res`, `ios/Runner/Assets.xcassets`, `web/icons`, and `macos`. `flutter analyze` is clean.
     - Commit: `chore(skeleton): generate launcher icons from branding assets`
     - _Requirements: 4.2_
 
-  - [ ] 7.3 Native splash and web loading screen
+  - [x] 7.3 Native splash and web loading screen
     - Configure `flutter_native_splash` for Android, iOS, and web. Run `dart run flutter_native_splash:create` and commit the generated files.
     - Acceptance: `web/index.html` contains the splash markup and style; Android and iOS splash resources exist.
     - Commit: `chore(skeleton): generate native splash and web loading screen`
     - _Requirements: 4.2, 4.4_
 
-  - [ ] 7.4 Web metadata
+  - [x] 7.4 Web metadata
     - In `web/index.html` set the title, description meta, favicon link, and Open Graph tags (`og:title`, `og:description`, `og:image` pointing to `og.png`). Confirm `web/manifest.json` name and short name are "Skeleton" (1.2).
     - Test (`test/platform/web_index_test.dart`): the file has each tag, and `og:image` ends with `og.png`.
     - Acceptance: test passes.
