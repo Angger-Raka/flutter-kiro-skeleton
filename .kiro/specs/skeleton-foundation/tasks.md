@@ -35,7 +35,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `chore(skeleton): set display name to Skeleton on all platforms`
     - _Requirements: 1.3, 4.5_
 
-  - [ ] 1.3 Check `.gitignore` rules
+  - [x] 1.3 Check `.gitignore` rules
     - Make sure `.gitignore` does not ignore `.kiro/`, `lib/core/theme/tokens.g.dart`, `docs/` generated files, or `pubspec.lock`. Add `*.freezed.dart`. Keep `.dart_tool/` and `build/` ignored.
     - Acceptance: `git check-ignore -v lib/core/theme/tokens.g.dart pubspec.lock lib/app/di/injection.config.dart .kiro/specs` prints nothing. `git check-ignore -v lib/core/settings/app_settings.freezed.dart` reports the rule.
     - Commit: `chore(skeleton): adjust gitignore for generated files policy`
