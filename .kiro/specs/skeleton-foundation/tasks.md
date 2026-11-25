@@ -41,7 +41,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `chore(skeleton): adjust gitignore for generated files policy`
     - _Requirements: 1.6, 2.6, 7.5_
 
-  - [ ] 1.4 Add runtime and dev dependencies with pinned versions
+  - [x] 1.4 Add runtime and dev dependencies with pinned versions
     - `flutter pub add` each package of requirement 2.1 and `dev:` each package of 2.2, including `kiri_check` 1.4.0. Pin each to an exact version (no caret) or a tight range, taken from `flutter pub add` on the pinned SDK.
     - Do not add `json_serializable`, `json_annotation`, `drift`, `drift_flutter`, `sqlite3_flutter_libs`, `cached_network_image`, or any `kit` dependency.
     - Add the `flutter_localizations` SDK dependency and `flutter: generate: true`.
