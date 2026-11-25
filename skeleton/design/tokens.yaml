@@ -1,0 +1,27 @@
+version: 2
+language: tactile-design@30495a2
+neutral: sand
+surface_top: "#ffffff"
+hues:
+  accent: blue
+  success: green
+  danger: red
+  warning: amber
+  info: blue
+  identity: []
+primary: neutral
+typography:
+  sans:
+    family: Inter
+    files: [assets/fonts/Inter-Medium.ttf]
+    weight: 500
+  heading: null
+  mono: null
+  size_factor: 1.0
+  tracking:
+    label: -0.01
+    display: -0.02
+radius_control: 6
+contrast:
+  tune_faint_text: true
+overrides: {}
