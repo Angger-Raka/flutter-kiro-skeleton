@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skeleton/core/theme/tactile/shadows.dart';
 import 'package:skeleton/core/theme/tokens.g.dart';
 
 /// Kinds of surface from 04 §5.
@@ -122,16 +123,17 @@ class SurfaceScope extends InheritedWidget {
   Color get selectedFill => ink(_groundStep + 2);
 
   /// Shadow list of a secondary button on this surface.
-  List<BoxShadow> button() => shadows.button;
+  List<BoxShadow> button() => SurfaceShadows.control(shadows.button, this);
 
   /// Shadow list of a primary button on this surface.
   List<BoxShadow> primary() => shadows.primary;
 
   /// Shadow list of a toggle on this surface.
-  List<BoxShadow> toggle() => shadows.toggle;
+  List<BoxShadow> toggle() => SurfaceShadows.control(shadows.toggle, this);
 
-  /// Shadow list of a badge in [hue] (the neutral badge for now).
-  List<BoxShadow> badge(HueScale hue) => shadows.badge;
+  /// Shadow list of a badge in [hue].
+  List<BoxShadow> badge(HueScale hue) =>
+      SurfaceShadows.badge(shadows.badge, this, hue);
 
   /// Copy of this scope for another [kind], same brightness and palette.
   SurfaceScope withKind(SurfaceKind kind, Widget child) => SurfaceScope(
