@@ -16,6 +16,7 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:skeleton/app/di/register_module.dart' as _i141;
 import 'package:skeleton/app/env.dart' as _i9;
+import 'package:skeleton/app/placeholder/connection_check_cubit.dart' as _i850;
 import 'package:skeleton/core/log/logger.dart' as _i854;
 import 'package:skeleton/core/network/api_client.dart' as _i940;
 import 'package:skeleton/core/services/clipboard_service.dart' as _i647;
@@ -49,6 +50,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i361.Dio>(() => registerModule.dio(gh<_i9.Env>()));
     gh.lazySingleton<_i940.ApiClient>(() => _i940.ApiClient(gh<_i361.Dio>()));
+    gh.factory<_i850.ConnectionCheckCubit>(
+      () => _i850.ConnectionCheckCubit(
+        gh<_i940.ApiClient>(),
+        gh<_i9.Env>(),
+        gh<_i854.Logger>(),
+      ),
+    );
     return this;
   }
 }
