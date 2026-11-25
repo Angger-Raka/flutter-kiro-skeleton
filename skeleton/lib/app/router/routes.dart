@@ -1,5 +1,8 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeleton/app/di/injection.dart';
+import 'package:skeleton/app/placeholder/connection_check_cubit.dart';
+import 'package:skeleton/app/placeholder/placeholder_page.dart';
 import 'package:skeleton/app/router/app_shell.dart';
 import 'package:skeleton/app/router/route_names.dart';
 
@@ -12,8 +15,10 @@ GoRouter buildRouter() => GoRouter(
       routes: [
         GoRoute(
           path: RouteNames.root,
-          // Temporary until task 6.6 adds PlaceholderPage.
-          builder: (context, state) => const SizedBox(key: Key('root-page')),
+          builder: (context, state) => BlocProvider(
+            create: (_) => getIt<ConnectionCheckCubit>(),
+            child: const PlaceholderPage(),
+          ),
         ),
       ],
     ),
