@@ -240,7 +240,7 @@ colour or size is typed by hand.
 4. THE Tokens_Output SHALL be committed to the repository.
 5. WHEN the Token_Generator runs twice with the same inputs, THE Token_Generator SHALL write byte-identical output.
 6. IF the Tokens_File names a neutral or hue that is not in the Radix_Scales, THEN THE Token_Generator SHALL exit with a non-zero code, print a message, and leave the Tokens_Output unchanged.
-7. WHEN `tune_faint_text` is true, THE Token_Generator SHALL adjust only the OKLCH lightness of ink-9 and ink-10 until their gates pass, and SHALL print each adjustment.
+7. WHEN `tune_faint_text` is true, THE Token_Generator SHALL adjust only the OKLCH lightness of ink-9 and ink-10, and of hue-11 where the 4.5:1 gate on hue-3 fails (hue and chroma unchanged), until their gates pass, and SHALL print each adjustment.
 8. THE Token_Generator SHALL print every applied `overrides` entry to stdout.
 9. THE Token_Generator SHALL NOT write `docs/DESIGN_TOKENS.md`, since that belongs to `kit tokens`.
 10. THE Token_Generator output contract (file name, class names, shape) SHALL stay compatible with `04` §4.2 so that `kit tokens` can replace it.
