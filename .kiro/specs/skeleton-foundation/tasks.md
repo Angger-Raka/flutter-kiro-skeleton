@@ -50,7 +50,7 @@ Commit style: `type(scope): imperative subject`, at most 72 characters, scope = 
     - Commit: `chore(skeleton): add pinned foundation dependencies`
     - _Requirements: 2.1, 2.2, 2.3, 2.5, 2.6_
 
-  - [ ] 1.5 Enable very_good_analysis
+  - [x] 1.5 Enable very_good_analysis
     - Write `analysis_options.yaml` that includes `package:very_good_analysis/analysis_options.yaml`. Add excludes only for generated files (`**/*.g.dart`, `**/*.freezed.dart`, `**/injection.config.dart`, `lib/core/l10n/app_localizations*.dart`).
     - Fix lint findings in the template files that stay.
     - Acceptance: `flutter analyze` reports zero issues.
