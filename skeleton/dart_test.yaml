@@ -1,0 +1,7 @@
+tags:
+  # Golden tests run on macOS only and are not part of `flutter test` in CI.
+  golden:
+  # End-to-end checks of the repo tools (sub-process runs).
+  e2e:
+  # Tests that take long (the `full` stress profile).
+  slow:
