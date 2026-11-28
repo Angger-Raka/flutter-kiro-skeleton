@@ -12,6 +12,8 @@ import 'package:skeleton/core/theme/app_theme.dart';
 import 'fonts.dart';
 import 'surface_host.dart';
 
+export 'stress_property.dart';
+
 /// Hostile data a widget must survive (design "Fixtures").
 enum StressFixture {
   normal,
@@ -290,13 +292,15 @@ List<StressCase> stressCases(
 ///
 /// When [StressCase.a11y] is set, runs `androidTapTargetGuideline`,
 /// `labeledTapTargetGuideline`, and `textContrastGuideline` with semantics on.
-/// [skipContrastReason] (non-empty) skips the contrast guideline.
+/// [skipContrastReason] (non-empty) skips the contrast guideline. [data]
+/// replaces the data of the fixture (used by \`stressProperty\`).
 Future<void> runStressCase(
   WidgetTester tester,
   StressCase c,
   StressBuilder builder, {
   bool saveFailureImage = true,
   String? skipContrastReason,
+  StressData? data,
 }) async {
   tester.view
     ..devicePixelRatio = c.devicePixelRatio
@@ -319,7 +323,7 @@ Future<void> runStressCase(
       ? TargetPlatform.iOS
       : TargetPlatform.macOS;
   try {
-    final data = StressData.of(c.fixture);
+    final stressData = data ?? StressData.of(c.fixture);
     final theme = buildTheme(
       c.brightness,
       WindowClassX.fromWidth(c.size.width),
@@ -333,12 +337,12 @@ Future<void> runStressCase(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Directionality(
-          textDirection: data.direction,
+          textDirection: stressData.direction,
           child: SurfaceHost(
             brightness: c.brightness,
             size: c.size,
             boundaryKey: boundary,
-            child: Builder(builder: (context) => builder(context, data)),
+            child: Builder(builder: (context) => builder(context, stressData)),
           ),
         ),
       ),
