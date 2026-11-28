@@ -79,6 +79,13 @@ bool shouldCopy(String relativePath) {
   final last = segments.last;
   if (last.endsWith('.iml')) return false;
   if (last == '.flutter-plugins-dependencies') return false;
+  // Files that Flutter regenerates on the first run.
+  if (segments.contains('ephemeral') || last == 'Generated.xcconfig') {
+    return false;
+  }
+  if (last == 'flutter_export_environment.sh' || last == 'local.properties') {
+    return false;
+  }
   if (last == 'pubspec.lock' && segments.length == 1) return false;
   if (segments.length >= 2 &&
       segments[0] == 'test' &&
