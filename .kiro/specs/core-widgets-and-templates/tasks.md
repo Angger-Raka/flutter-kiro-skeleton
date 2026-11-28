@@ -83,7 +83,7 @@ P1 ─ A1 ─ A2 ─ A3 ─ A4 ─ A5 ─ A6 ─ A8 ─ (A7 optional)
 
 ## Tasks
 
-- [ ] P1. Core strings **[kode]**
+- [x] P1. Core strings **[kode]**
   - Depends: none. Owns: `lib/core/l10n/app_en.arb`, `app_id.arb`, generated `app_localizations*.dart`.
   - Add only the keys that do not exist: `clear`, `close`, `dismiss`, `themeModeLabel`, `copied`, `tryAgain`. Do not add `themeSystem`, `themeLight`, `themeDark`, or any `failure<Name>Title`/`Body`
     (all seven pairs and the three theme keys already exist; a duplicate key breaks `flutter gen-l10n`). No new key may end in `Loading` or start with `loading` (`arb_test.dart` demands "…" for those).
@@ -92,7 +92,7 @@ P1 ─ A1 ─ A2 ─ A3 ─ A4 ─ A5 ─ A6 ─ A8 ─ (A7 optional)
   - Commit: `feat(l10n): add core widget strings in English and Indonesian`
   - _Requirements: 2.4, 6.2_ _Design: Strings, D4_
 
-- [ ] A1. Stress harness core **[kode]**
+- [x] A1. Stress harness core **[kode]**
   - Depends: P1. Owns: `test/helpers/surface_host.dart`, `test/helpers/fonts.dart`, `test/helpers/stress.dart`, `test/helpers/stress_test.dart`, `.gitignore` (add `test/**/failures/`).
   - Implement `StressFixture`, `StressData`, `StressProfile` (`quick`, `full`, from `--dart-define=STRESS`), `runStressCase`, `stressTest` (without a11y yet), the case labels,
     `SurfaceHost` (root `SurfaceScope`, real `buildTheme`, localization delegates, bounded constraints), `FlutterError` capture, failure image under `failures/`, and `loadInterFont()` in `fonts.dart`
@@ -105,7 +105,7 @@ P1 ─ A1 ─ A2 ─ A3 ─ A4 ─ A5 ─ A6 ─ A8 ─ (A7 optional)
   - Commit: `test(helpers): add stress harness with fixtures and quick and full profiles`
   - _Requirements: 9.1–9.7, 9.9, 9.10_ _Design: Stress harness_
 
-- [ ] A2. Golden setup, tag, and gate flags **[kode]**
+- [x] A2. Golden setup, tag, and gate flags **[kode]**
   - Depends: A1. Owns: `dart_test.yaml`, `test/helpers/golden.dart`, `test/helpers/golden_test.dart`, `tool/check.dart`.
   - `dart_test.yaml` declares tags `golden`, `e2e`, and `slow`. `golden.dart`: `loadGoldenFonts` (calls `loadInterFont()` of A1), `goldenTest`/`goldenGallery` (DPR 2, `ThemeData.platform` and `debugDefaultTargetPlatformOverride` macOS, files in `goldens/` next to the test, tag `golden`),
     the non-macOS `fail` with a clear message. `tool/check.dart` passes `--exclude-tags golden,e2e` to `flutter test` and runs `dart format --set-exit-if-changed lib test tool` (not `.`, so `bricks/` templates do not break it).
@@ -116,7 +116,7 @@ P1 ─ A1 ─ A2 ─ A3 ─ A4 ─ A5 ─ A6 ─ A8 ─ (A7 optional)
   - Commit: `test(helpers): add golden setup, tags, and check.dart flags`
   - _Requirements: 11.1–11.7_ _Design: Golden setup, D12_
 
-- [ ] A3. Core widget inventory, catalog scanner, coverage test **[kode]**
+- [x] A3. Core widget inventory, catalog scanner, coverage test **[kode]**
   - Depends: A2. Owns: `test/helpers/core_widget_inventory.dart`, `test/core/catalog_blocks_test.dart`, `test/core/core_widget_coverage_test.dart`, and the doc comments (catalog blocks only, no behaviour change) of `lib/core/theme/tactile/surface.dart` and `pressable.dart`.
   - The inventory lists the 25 widgets of Req 1.1 with category, lib path, stress test path, golden paths. The primitives map to `test/core/theme/tactile_surface_stress_test.dart` and `pressable_stress_test.dart` (and their golden tests). `LoadingView` and `SkeletonBlock` both map to `test/core/widgets/loading_view_test.dart` and `loading_view_golden_test.dart` (F3, one gallery). The scanner checks only the inventory's classes (and `State` subclasses are ignored), not every public type in the folder: helper enums and data types (`AppButtonSize`, `ActionGroupGap`, `AppSegment`, `AdaptiveDestination`, `ToastRequest`) and `MinHitArea` and `PressFill` need no block. It checks the inventory classes for one `{@catalog}` block with five non-empty fields and a valid category, and fails if `lib/core/widgets/CATALOG.md` exists. The coverage test checks every inventory widget that already has a stress test file or a golden file: it must have both
     (the stress file contains `stressTest(`, and both light and dark goldens exist). A flag `strict` (false for now) makes both tests also fail when a listed widget file or its tests are missing. Z2 sets `strict` to true. The inventory has no `pending` list: before Z2 the widgets that do not exist yet are skipped by the non-strict flag.
@@ -126,7 +126,7 @@ P1 ─ A1 ─ A2 ─ A3 ─ A4 ─ A5 ─ A6 ─ A8 ─ (A7 optional)
   - Commit: `test(core): add catalog block scanner and widget coverage test`
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 12.5_ _Design: D6, D15, Catalog block format_
 
-- [ ] A4. Architecture test: Material ban and reserved names **[kode]**
+- [x] A4. Architecture test: Material ban and reserved names **[kode]**
   - Depends: A3. Owns: `test/architecture/architecture_test.dart`.
   - Remove `_reservedNames` and its check (the five layout names are now allowed). Extend the Material rule: `_noMaterialButtonsInApp` becomes a check that scans `app`, `core/widgets`, `core/layout`, and `features`, with the list extended by `Card`, `ListTile`,
     `AlertDialog`, `Dialog`, `SnackBar`, `PopupMenuButton`, `DropdownButton`, `showDialog`, `showModalBottomSheet` (`Tooltip` stays allowed). Add a `Scaffold` rule: allowed in `core/layout/adaptive_scaffold.dart`, and, as a dated exception that Z2 removes,
@@ -136,7 +136,7 @@ P1 ─ A1 ─ A2 ─ A3 ─ A4 ─ A5 ─ A6 ─ A8 ─ (A7 optional)
   - Commit: `test(architecture): ban Material visuals in core and allow layout names`
   - _Requirements: 2.1, 2.2, 2.3, 2.10, 7.7_ _Design: Why the Pressable and Material boundary is one rule_
 
-- [ ] A5. Missing size, motion, and scrim tokens **[kode]**
+- [x] A5. Missing size, motion, and scrim tokens **[kode]**
   - Depends: A4. Owns: `tool/src/ladders.dart`, `tool/src/palette.dart`, `tool/generate_tokens.dart` (only if the generator needs a call), `lib/core/theme/tokens.g.dart`, `lib/core/theme/tactile/motion.dart`, `test/core/theme/motion_test.dart`, `test/tool/generate_tokens_ladders_test.dart`, `test/tool/generate_tokens_palette_test.dart`.
     Not owned: `design/tokens.yaml` (fixed key set; unknown keys throw `KnobsException`).
   - `ladders.dart` gets a new map `overlayTokens` rendered as a new class `AppOverlay` after `AppLayout` (so `layoutTokens` and the test "AppLayout matches requirement 20.4 exactly" stay unchanged): `dialogDefault` 620, `dialogConfirm` 460, `dialogInfo` 440, `toastHeight` 48,
@@ -149,7 +149,7 @@ P1 ─ A1 ─ A2 ─ A3 ─ A4 ─ A5 ─ A6 ─ A8 ─ (A7 optional)
   - Commit: `feat(theme): add overlay, scrim, and motion tokens`
   - _Requirements: 2.1, 3.8, 6.6, 7.1, 7.2, 7.5_ _Design: D13_
 
-- [ ] A6. Accessibility checks in the harness **[kode]**
+- [x] A6. Accessibility checks in the harness **[kode]**
   - Depends: A5. Owns: `test/helpers/stress.dart`, `test/helpers/stress_test.dart` (lane P only).
   - Add `interactive` and `skipContrastReason` to `stressTest`. For interactive tests the quick profile adds the light 375×812 case and runs `androidTapTargetGuideline`, `labeledTapTargetGuideline`, and `textContrastGuideline` in light and dark with `ensureSemantics`.
     An empty `skipContrastReason` throws at registration.
@@ -159,7 +159,7 @@ P1 ─ A1 ─ A2 ─ A3 ─ A4 ─ A5 ─ A6 ─ A8 ─ (A7 optional)
   - Commit: `test(helpers): add accessibility guideline checks to the stress harness`
   - _Requirements: 10.1, 10.2, 10.3 (harness part)_ _Design: Accessibility checks_
 
-- [ ] A8. Compile check of the public API **[kode]**
+- [x] A8. Compile check of the public API **[kode]**
   - Depends: A5, A6. Owns: `lib/core/_api_stubs.dart` (scratch, deleted before the commit), `spikes/crew-run/S5-A8.md`, and corrections to the signatures in `.kiro/specs/core-widgets-and-templates/design.md`.
   - Write stubs of every public signature in design "Components and interfaces" (classes with `throw UnimplementedError()` bodies, the helper enums, `HueRole` access through `context.hue`, `AppOverlay`, `palette.scrim`, `AppMotion` constants) into the scratch file, run `flutter analyze`,
     and fix every error in the design (a wrong name, type, or missing token) and, if the error is a missing token, in A5's list. Repeat until zero issues. Delete the scratch file.
@@ -167,7 +167,7 @@ P1 ─ A1 ─ A2 ─ A3 ─ A4 ─ A5 ─ A6 ─ A8 ─ (A7 optional)
   - Commit: `docs(spikes): record compile check of the core widget API`
   - _Requirements: 2.1 (all later tasks rely on the API)_ _Design: API compile check_
 
-- [ ] A7. `stressProperty` with kiri_check **[kode]**
+- [x] A7. `stressProperty` with kiri_check **[kode]**
   - Depends: A6. Not blocking any other task. Owns: `test/helpers/stress_property.dart` (exported from `stress.dart`), its test.
   - Spike first (30 minutes at most): can a `kiri_check` `forAll` block drive the same render as `stressTest` through the test binding? Record the answer in `spikes/crew-run/S5-A7.md`. Implement the preferred path if yes, the fallback of the
     design if no, and the seeded `Random` fallback only if both fail. The seed is fixed (`20260126`).
