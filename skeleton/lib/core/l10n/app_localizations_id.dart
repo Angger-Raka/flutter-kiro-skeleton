@@ -91,4 +91,22 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get failureUnexpectedBody =>
       'Terjadi kesalahan tak terduga. Coba lagi.';
+
+  @override
+  String get clear => 'Hapus';
+
+  @override
+  String get close => 'Tutup';
+
+  @override
+  String get dismiss => 'Tutup';
+
+  @override
+  String get themeModeLabel => 'Tema warna';
+
+  @override
+  String get copied => 'Tersalin';
+
+  @override
+  String get tryAgain => 'Coba lagi';
 }

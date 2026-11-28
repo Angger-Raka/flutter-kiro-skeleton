@@ -91,4 +91,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get failureUnexpectedBody =>
       'An unexpected error occurred. Try again.';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get themeModeLabel => 'Color theme';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get tryAgain => 'Try again';
 }

@@ -25,5 +25,11 @@
   "failureCacheTitle": "Masalah penyimpanan",
   "failureCacheBody": "Kami tidak dapat membaca atau menyimpan data di perangkat ini.",
   "failureUnexpectedTitle": "Terjadi kesalahan",
-  "failureUnexpectedBody": "Terjadi kesalahan tak terduga. Coba lagi."
+  "failureUnexpectedBody": "Terjadi kesalahan tak terduga. Coba lagi.",
+  "clear": "Hapus",
+  "close": "Tutup",
+  "dismiss": "Tutup",
+  "themeModeLabel": "Tema warna",
+  "copied": "Tersalin",
+  "tryAgain": "Coba lagi"
 }

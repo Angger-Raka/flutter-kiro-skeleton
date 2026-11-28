@@ -25,5 +25,11 @@
   "failureCacheTitle": "Storage problem",
   "failureCacheBody": "We could not read or save data on this device.",
   "failureUnexpectedTitle": "Something went wrong",
-  "failureUnexpectedBody": "An unexpected error occurred. Try again."
+  "failureUnexpectedBody": "An unexpected error occurred. Try again.",
+  "clear": "Clear",
+  "close": "Close",
+  "dismiss": "Dismiss",
+  "themeModeLabel": "Color theme",
+  "copied": "Copied",
+  "tryAgain": "Try again"
 }
