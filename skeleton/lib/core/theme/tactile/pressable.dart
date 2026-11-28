@@ -1,6 +1,3 @@
-// The catalog block format of 05 section 5 is not a dartdoc directive.
-// ignore_for_file: doc_directive_unknown
-
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';

@@ -1,6 +1,3 @@
-// The catalog block format of 05 section 5 is not a dartdoc directive.
-// ignore_for_file: doc_directive_unknown
-
 import 'package:flutter/material.dart';
 import 'package:skeleton/core/theme/tactile/motion.dart';
 import 'package:skeleton/core/theme/tactile/press_fill.dart';

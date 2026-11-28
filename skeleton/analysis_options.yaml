@@ -6,3 +6,6 @@ analyzer:
     - "**/*.freezed.dart"
     - "**/injection.config.dart"
     - "lib/core/l10n/app_localizations*.dart"
+  errors:
+    # `{@catalog}` is a project doc directive (core widget catalog blocks).
+    doc_directive_unknown: ignore
