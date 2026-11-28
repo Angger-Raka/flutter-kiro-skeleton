@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:skeleton/core/theme/tactile/surface.dart';
 import 'package:skeleton/core/theme/tokens.g.dart';
 
+/// Space between the window edge and the widget under test.
+const double hostInset = 8;
+
 /// Test host: a root ground [SurfaceScope] for [brightness] and bounded, loose
-/// constraints of [size] at the top left, as the app gives a widget.
+/// constraints of [size] minus [hostInset] on every side, at the top left.
 ///
 /// There is no `Scaffold`. [boundaryKey] marks the [RepaintBoundary] that the
 /// stress harness captures when a case fails.
@@ -34,11 +37,18 @@ class SurfaceHost extends StatelessWidget {
         key: boundaryKey,
         child: ColoredBox(
           color: palette.inkStep(1),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: ConstrainedBox(
-              constraints: BoxConstraints.loose(size),
-              child: child,
+          // The inset keeps the widget off the window edge: the Flutter tap
+          // target guideline skips any node that touches an edge.
+          child: Padding(
+            padding: const EdgeInsets.all(hostInset),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: ConstrainedBox(
+                constraints: BoxConstraints.loose(
+                  Size(size.width - 2 * hostInset, size.height - 2 * hostInset),
+                ),
+                child: child,
+              ),
             ),
           ),
         ),

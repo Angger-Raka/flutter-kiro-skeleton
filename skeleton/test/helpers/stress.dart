@@ -134,6 +134,7 @@ class StressCase {
     required this.brightness,
     required this.input,
     required this.fixture,
+    this.a11y = false,
   });
 
   final Size size;
@@ -142,6 +143,10 @@ class StressCase {
   final Brightness brightness;
   final InputMode input;
   final StressFixture fixture;
+
+  /// True when the accessibility guidelines run on this case (interactive
+  /// widgets at 375×812, light and dark).
+  final bool a11y;
 
   /// Case label without the fixture.
   String get groupLabel =>
@@ -178,6 +183,7 @@ const _fullSizes = <Size>[
 List<StressGroup> stressGroups(
   StressProfile profile, {
   Set<StressFixture> fixtures = const {...StressFixture.values},
+  bool interactive = false,
 }) {
   final ordered = [
     for (final f in StressFixture.values)
@@ -189,14 +195,16 @@ List<StressGroup> stressGroups(
     double scale,
     Brightness b,
     InputMode input,
-    StressFixture f,
-  ) => StressCase(
+    StressFixture f, {
+    bool a11y = false,
+  }) => StressCase(
     size: size,
     devicePixelRatio: dpr,
     textScale: scale,
     brightness: b,
     input: input,
     fixture: f,
+    a11y: a11y,
   );
 
   switch (profile) {
@@ -219,6 +227,20 @@ List<StressGroup> stressGroups(
               Brightness.dark,
               InputMode.touch,
               StressFixture.normal,
+              a11y: interactive,
+            ),
+          ]),
+        // Interactive widgets also run the guidelines in light at 375×812.
+        if (interactive && fixtures.contains(StressFixture.normal))
+          StressGroup([
+            make(
+              _quickDark,
+              1,
+              1,
+              Brightness.light,
+              InputMode.touch,
+              StressFixture.normal,
+              a11y: true,
             ),
           ]),
       ];
@@ -251,19 +273,30 @@ List<StressGroup> stressGroups(
 List<StressCase> stressCases(
   StressProfile profile, {
   Set<StressFixture> fixtures = const {...StressFixture.values},
+  bool interactive = false,
 }) => [
-  for (final g in stressGroups(profile, fixtures: fixtures)) ...g.cases,
+  for (final g in stressGroups(
+    profile,
+    fixtures: fixtures,
+    interactive: interactive,
+  ))
+    ...g.cases,
 ];
 
 /// Renders one case and fails with the case label on any `FlutterError`
 /// (including `RenderFlex overflowed`). Leaves the tree empty and restores the
 /// platform override. [saveFailureImage] writes `failures/<label>.png` next to
 /// the running test file (best effort, errors ignored).
+///
+/// When [StressCase.a11y] is set, runs `androidTapTargetGuideline`,
+/// `labeledTapTargetGuideline`, and `textContrastGuideline` with semantics on.
+/// [skipContrastReason] (non-empty) skips the contrast guideline.
 Future<void> runStressCase(
   WidgetTester tester,
   StressCase c,
   StressBuilder builder, {
   bool saveFailureImage = true,
+  String? skipContrastReason,
 }) async {
   tester.view
     ..devicePixelRatio = c.devicePixelRatio
@@ -280,6 +313,7 @@ Future<void> runStressCase(
   final previousPlatform = debugDefaultTargetPlatformOverride;
   final errors = <FlutterErrorDetails>[];
   final boundary = GlobalKey();
+  final semantics = c.a11y ? tester.ensureSemantics() : null;
   FlutterError.onError = errors.add;
   debugDefaultTargetPlatformOverride = c.input == InputMode.touch
       ? TargetPlatform.iOS
@@ -321,11 +355,36 @@ Future<void> runStressCase(
           .join('\n');
       throw TestFailure('${c.label}\n$details');
     }
+    if (c.a11y) await _runGuidelines(tester, c, skipContrastReason);
   } finally {
+    semantics?.dispose();
     await tester.pumpWidget(const SizedBox.shrink());
     tester.takeException();
     FlutterError.onError = previousOnError;
     debugDefaultTargetPlatformOverride = previousPlatform;
+  }
+}
+
+Future<void> _runGuidelines(
+  WidgetTester tester,
+  StressCase c,
+  String? skipContrastReason,
+) async {
+  final guidelines = <String, AccessibilityGuideline>{
+    'androidTapTargetGuideline': androidTapTargetGuideline,
+    'labeledTapTargetGuideline': labeledTapTargetGuideline,
+    if (skipContrastReason == null)
+      'textContrastGuideline': textContrastGuideline,
+  };
+  if (skipContrastReason != null) {
+    printOnFailure('textContrastGuideline skipped: $skipContrastReason');
+  }
+  for (final e in guidelines.entries) {
+    try {
+      await expectLater(tester, meetsGuideline(e.value));
+    } on TestFailure catch (failure) {
+      throw TestFailure('${c.label}\n${e.key}: ${failure.message}');
+    }
   }
 }
 
@@ -359,16 +418,31 @@ Future<void> _saveFailureImage(
 /// with the case label on any overflow or other `FlutterError`.
 ///
 /// Loads the bundled Inter font once so metrics match the app.
+///
+/// [interactive] adds the light 375×812 case (18 renders in `quick`) and runs
+/// the accessibility guidelines at 375×812 in light and dark.
+/// [skipContrastReason] skips the contrast guideline and must be a non-empty
+/// written reason: an empty one throws [ArgumentError] at registration.
 void stressTest(
   String name,
   StressBuilder builder, {
   Set<StressFixture> fixtures = const {...StressFixture.values},
+  bool interactive = false,
+  String? skipContrastReason,
   StressProfile? profile,
 }) {
+  if (skipContrastReason != null && skipContrastReason.trim().isEmpty) {
+    throw ArgumentError.value(
+      skipContrastReason,
+      'skipContrastReason',
+      'write the reason for skipping the contrast guideline',
+    );
+  }
   setUpAll(loadInterFont);
   for (final group in stressGroups(
     profile ?? StressProfile.fromEnvironment,
     fixtures: fixtures,
+    interactive: interactive,
   )) {
     final single = group.cases.length == 1;
     final fixture = single ? ' | ${group.cases.first.fixture.name}' : '';
@@ -376,7 +450,12 @@ void stressTest(
       '$name | ${group.name}$fixture',
       (tester) async {
         for (final c in group.cases) {
-          await runStressCase(tester, c, builder);
+          await runStressCase(
+            tester,
+            c,
+            builder,
+            skipContrastReason: skipContrastReason,
+          );
         }
       },
     );

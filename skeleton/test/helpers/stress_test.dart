@@ -95,6 +95,124 @@ void main() {
     );
   });
 
+  group('accessibility', () {
+    final cases = stressCases(StressProfile.quick, interactive: true);
+    final light = cases.singleWhere(
+      (c) => c.a11y && c.brightness == Brightness.light,
+    );
+    final dark = cases.singleWhere(
+      (c) => c.a11y && c.brightness == Brightness.dark,
+    );
+
+    Widget tappable(double size, {String? label}) => Align(
+      alignment: Alignment.topLeft,
+      child: Semantics(
+        container: true,
+        button: true,
+        label: label,
+        onTap: () {},
+        child: SizedBox(width: size, height: size),
+      ),
+    );
+
+    Widget text(Color color) =>
+        Text('Low contrast text', style: TextStyle(color: color, fontSize: 16));
+
+    Future<String?> failureOf(
+      WidgetTester tester,
+      StressCase c,
+      Widget Function(BuildContext) build, {
+      String? skipContrastReason,
+    }) async {
+      try {
+        await runStressCase(
+          tester,
+          c,
+          (context, data) => build(context),
+          saveFailureImage: false,
+          skipContrastReason: skipContrastReason,
+        );
+      } on TestFailure catch (e) {
+        return e.message;
+      }
+      return null;
+    }
+
+    test('interactive adds one case: 18 renders, 2 with guidelines', () {
+      expect(cases, hasLength(18));
+      expect(cases.where((c) => c.a11y), hasLength(2));
+      expect(stressCases(StressProfile.quick), hasLength(17));
+      expect(stressCases(StressProfile.quick).any((c) => c.a11y), isFalse);
+      expect(light.label, '375×812 @1.0 x1.0 light touch | normal');
+    });
+
+    testWidgets('a 20 px target fails androidTapTargetGuideline', (
+      tester,
+    ) async {
+      final message = await failureOf(
+        tester,
+        light,
+        (_) => tappable(20, label: 'Open'),
+      );
+      expect(message, contains('androidTapTargetGuideline'));
+      expect(message, contains('375×812'));
+    });
+
+    testWidgets('an unlabeled tappable fails labeledTapTargetGuideline', (
+      tester,
+    ) async {
+      final message = await failureOf(tester, light, (_) => tappable(48));
+      expect(message, contains('labeledTapTargetGuideline'));
+    });
+
+    testWidgets('a labeled 48 px tappable passes in light and dark', (
+      tester,
+    ) async {
+      for (final c in [light, dark]) {
+        expect(
+          await failureOf(tester, c, (_) => tappable(48, label: 'Open')),
+          isNull,
+        );
+      }
+    });
+
+    testWidgets('low contrast text fails textContrastGuideline', (
+      tester,
+    ) async {
+      final message = await failureOf(
+        tester,
+        light,
+        (_) => text(const Color(0xFFEEEEEE)),
+      );
+      expect(message, contains('textContrastGuideline'));
+    });
+
+    testWidgets('skipContrastReason skips only the contrast guideline', (
+      tester,
+    ) async {
+      final message = await failureOf(
+        tester,
+        light,
+        (_) => text(const Color(0xFFEEEEEE)),
+        skipContrastReason: 'decorative',
+      );
+      expect(message, isNull);
+    });
+
+    test('an empty skipContrastReason throws at registration', () {
+      for (final reason in ['', '  ']) {
+        expect(
+          () => stressTest(
+            'x',
+            (context, data) => const SizedBox.shrink(),
+            skipContrastReason: reason,
+          ),
+          throwsArgumentError,
+        );
+      }
+    });
+  });
+
   group('rendering', () {
     final first = stressCases(StressProfile.quick).first;
 
