@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:skeleton/core/l10n/app_localizations.dart';
 import 'package:skeleton/core/layout/window_class.dart';
@@ -77,8 +78,17 @@ void goldenTest(
             await prepare(tester);
             await tester.pump(const Duration(milliseconds: 400));
           }
+          // `matchesGoldenFile(finder)` captures at pixel ratio 1.0, so the
+          // image is taken here at [goldenPixelRatio] (2x logical size).
+          final render =
+              tester.renderObject(find.byKey(boundary))
+                  as RenderRepaintBoundary;
+          final image = (await tester.runAsync(
+            () => render.toImage(pixelRatio: goldenPixelRatio),
+          ))!;
+          addTearDown(image.dispose);
           await expectLater(
-            find.byKey(boundary),
+            image,
             matchesGoldenFile('goldens/${name}_${brightness.name}.png'),
           );
         } finally {
