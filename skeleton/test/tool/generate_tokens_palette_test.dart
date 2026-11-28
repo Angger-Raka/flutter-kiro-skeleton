@@ -41,6 +41,12 @@ void main() {
     expect('identity: <HueScale>[]'.allMatches(source), hasLength(2));
   });
 
+  test('scrim is a palette colour in both palettes', () {
+    expect(source, contains('scrim: Color(0x4D000000),'));
+    expect(source, contains('scrim: Color(0xE6000000),'));
+    expect('scrim:'.allMatches(source), hasLength(2));
+  });
+
   test('output is valid Dart (no analyzer errors)', () {
     final result = Process.runSync('dart', [
       'analyze',
@@ -73,6 +79,9 @@ void main() {
     expect(toHex(light.primaryFg), '#fdfdfc');
     expect(toHex(dark.panel), '#111110');
     expect(toHex(dark.overlay), '#191918');
+    // Scrim: black at 30 % alpha in light and 90 % in dark.
+    expect(light.scrim, '#0000004d');
+    expect(dark.scrim, '#000000e6');
     // Dark ground: ink-1 with OKLCH L - 0.04.
     final delta = rgbToOkLch(dark.panel).l - rgbToOkLch(dark.ground).l;
     expect(delta, closeTo(0.04, 0.01));

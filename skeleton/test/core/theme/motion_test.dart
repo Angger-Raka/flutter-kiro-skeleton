@@ -20,6 +20,20 @@ void main() {
     );
   });
 
+  test('durations added for the core widgets', () {
+    expect(AppMotion.d0, Duration.zero);
+    expect(
+      [
+        AppMotion.d400,
+        AppMotion.d1000,
+        AppMotion.d1200,
+        AppMotion.d1500,
+        AppMotion.d6000,
+      ].map((d) => d.inMilliseconds),
+      [400, 1000, 1200, 1500, 6000],
+    );
+  });
+
   test('curves', () {
     expect(AppMotion.easeOut, const Cubic(0.23, 1, 0.32, 1));
     expect(AppMotion.easeMove, const Cubic(0.22, 1, 0.36, 1));

@@ -12,6 +12,7 @@ class AppPalette {
     required this.ink,
     required this.alphaA3,
     required this.alphaA4,
+    required this.scrim,
     required this.ground,
     required this.panel,
     required this.raised,
@@ -32,6 +33,9 @@ class AppPalette {
 
   /// Ink alpha step 4.
   final Color alphaA4;
+
+  /// Scrim behind dialogs and sheets.
+  final Color scrim;
 
   /// App ground.
   final Color ground;
@@ -84,6 +88,7 @@ class AppPalette {
     ],
     alphaA3: Color(0x10201000),
     alphaA4: Color(0x191F1500),
+    scrim: Color(0x4D000000),
     ground: Color(0xFFF9F9F8),
     panel: Color(0xFFFFFFFF),
     raised: Color(0xFFFFFFFF),
@@ -165,6 +170,7 @@ class AppPalette {
     ],
     alphaA3: Color(0x13F6F6F5),
     alphaA4: Color(0x1BFEFEF3),
+    scrim: Color(0xE6000000),
     ground: Color(0xFF090908),
     panel: Color(0xFF111110),
     raised: Color(0xFF191918),
@@ -394,6 +400,22 @@ abstract final class AppLayout {
   static const double topStrip = 52;
   static const double mobileTopBar = 56;
   static const double panelFloat = 8;
+}
+
+/// Sizes of dialogs, toasts, sheets, and empty states.
+abstract final class AppOverlay {
+  static const double dialogDefault = 620;
+  static const double dialogConfirm = 460;
+  static const double dialogInfo = 440;
+  static const double toastHeight = 48;
+  static const double sheetHandleWidth = 36;
+  static const double sheetHandleHeight = 5;
+  static const double sheetHandleHitWidth = 88;
+  static const double sheetHandleHitHeight = 44;
+  static const double emptyPadding = 44;
+  static const double dialogRise = 16;
+  static const double dialogBlur = 4;
+  static const double backdropBlur = 2;
 }
 
 /// Shadow recipes resolved to BoxShadow lists, per brightness.

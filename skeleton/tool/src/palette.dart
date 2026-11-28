@@ -53,6 +53,7 @@ class PaletteData {
     required this.ink,
     required this.alphaA3,
     required this.alphaA4,
+    required this.scrim,
     required this.ground,
     required this.panel,
     required this.raised,
@@ -75,6 +76,10 @@ class PaletteData {
 
   /// Ink alpha step 4, `#rrggbbaa`.
   final String alphaA4;
+
+  /// Scrim behind dialogs and sheets, `#rrggbbaa`: black at 30 % alpha in
+  /// light and 90 % in dark.
+  final String scrim;
 
   /// App ground.
   final Rgb ground;
@@ -175,6 +180,7 @@ PaletteData buildPalette(
     ink: ink,
     alphaA3: alpha['a3']!,
     alphaA4: alpha['a4']!,
+    scrim: dark ? '#000000e6' : '#0000004d',
     ground: dark ? darkGround : ink[1],
     panel: dark ? ink[0] : top,
     raised: dark ? ink[1] : top,
@@ -211,6 +217,7 @@ String _paletteLiteral(PaletteData p) {
     ..writeln('ink: [${p.ink.map(colorLiteral).join(', ')}],')
     ..writeln('alphaA3: ${alphaColorLiteral(p.alphaA3)},')
     ..writeln('alphaA4: ${alphaColorLiteral(p.alphaA4)},')
+    ..writeln('scrim: ${alphaColorLiteral(p.scrim)},')
     ..writeln('ground: ${colorLiteral(p.ground)},')
     ..writeln('panel: ${colorLiteral(p.panel)},')
     ..writeln('raised: ${colorLiteral(p.raised)},')
@@ -240,6 +247,7 @@ class AppPalette {
     required this.ink,
     required this.alphaA3,
     required this.alphaA4,
+    required this.scrim,
     required this.ground,
     required this.panel,
     required this.raised,
@@ -260,6 +268,9 @@ class AppPalette {
 
   /// Ink alpha step 4.
   final Color alphaA4;
+
+  /// Scrim behind dialogs and sheets.
+  final Color scrim;
 
   /// App ground.
   final Color ground;

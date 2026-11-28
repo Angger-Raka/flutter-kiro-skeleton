@@ -15,6 +15,9 @@ abstract final class AppMotion {
   /// One-off fold where both ends stay on screen.
   static const Curve easeInOut = Cubic(0.77, 0, 0.175, 1);
 
+  /// No motion (tooltip wait, reduced motion).
+  static const Duration d0 = Duration.zero;
+
   /// Silent fade.
   static const Duration d80 = Duration(milliseconds: 80);
 
@@ -35,6 +38,21 @@ abstract final class AppMotion {
 
   /// Sheet up.
   static const Duration d320 = Duration(milliseconds: 320);
+
+  /// Big object move (400 ms).
+  static const Duration d400 = Duration(milliseconds: 400);
+
+  /// Copy tick of a pill without a label.
+  static const Duration d1000 = Duration(milliseconds: 1000);
+
+  /// Skeleton shimmer period.
+  static const Duration d1200 = Duration(milliseconds: 1200);
+
+  /// Copy tick of a pill with a label.
+  static const Duration d1500 = Duration(milliseconds: 1500);
+
+  /// Toast on screen.
+  static const Duration d6000 = Duration(milliseconds: 6000);
 }
 
 /// Springs from 04 §8. Flutter 3.44.8 has `withDurationAndBounce` (S15: yes),

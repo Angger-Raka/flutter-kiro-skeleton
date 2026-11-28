@@ -37,6 +37,37 @@ void main() {
     expect(layout, contains('panelFloat = 8;'));
   });
 
+  test('AppOverlay holds the overlay sizes of design D13', () {
+    expect(overlayTokens, {
+      'dialogDefault': 620,
+      'dialogConfirm': 460,
+      'dialogInfo': 440,
+      'toastHeight': 48,
+      'sheetHandleWidth': 36,
+      'sheetHandleHeight': 5,
+      'sheetHandleHitWidth': 88,
+      'sheetHandleHitHeight': 44,
+      'emptyPadding': 44,
+      'dialogRise': 16,
+      'dialogBlur': 4,
+      'backdropBlur': 2,
+    });
+    final src = renderLadders(6);
+    expect(
+      src.indexOf('class AppOverlay'),
+      greaterThan(src.indexOf('class AppLayout')),
+    );
+    final overlay = src.substring(
+      src.indexOf('abstract final class AppOverlay'),
+    );
+    for (final e in overlayTokens.entries) {
+      expect(
+        overlay,
+        contains('static const double ${e.key} = ${e.value.toInt()};'),
+      );
+    }
+  });
+
   test('sizes, spacing, strokes are rendered', () {
     final src = renderLadders(6);
     expect(src, contains('control: 36,'));
