@@ -1,3 +1,6 @@
+// The catalog block format of 05 section 5 is not a dartdoc directive.
+// ignore_for_file: doc_directive_unknown
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -13,6 +16,17 @@ import 'package:skeleton/core/theme/tokens.g.dart';
 /// [pressedScale] has no default: callers pass .97 for a button, .92 or .94
 /// for an icon button (04 §7). `onPressed: null` disables the control (it is
 /// drawn at 60 % opacity and ignores input).
+///
+/// {@catalog}
+/// category: primitive
+/// use_when: a core widget needs press scale, hover fill, focus ring,
+///   disabled state, and a 48 px hit area on touch.
+/// avoid_when: a feature needs a button or an icon button; use AppButton or
+///   AppIconButton instead of wrapping Pressable.
+/// variants: pressedScale .97 (button), .92 and .94 (icon button),
+///   disabled with onPressed null
+/// tags: press, tap, hover, focus, hit-area
+/// {@endcatalog}
 class Pressable extends StatefulWidget {
   /// Creates a pressable.
   const Pressable({

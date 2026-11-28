@@ -1,3 +1,6 @@
+// The catalog block format of 05 section 5 is not a dartdoc directive.
+// ignore_for_file: doc_directive_unknown
+
 import 'package:flutter/material.dart';
 import 'package:skeleton/core/theme/tactile/motion.dart';
 import 'package:skeleton/core/theme/tactile/press_fill.dart';
@@ -172,6 +175,16 @@ class SurfaceScope extends InheritedWidget {
 
 /// Paints fill, edge, and drop of a [SurfaceKind] relative to the parent
 /// [SurfaceScope], then gives its children a scope for that kind.
+///
+/// {@catalog}
+/// category: primitive
+/// use_when: a core widget or a page needs a standard surface (panel,
+///   raised, well, overlay, sheet) with the tactile fill, edge, and shadow.
+/// avoid_when: a feature needs a card or a list row; use AppCard or AppRow,
+///   which are built on this surface.
+/// variants: ground, rail, panel, raised, overlay, sheet, well
+/// tags: surface, container, elevation, tactile
+/// {@endcatalog}
 class TactileSurface extends StatelessWidget {
   /// Creates a surface.
   const TactileSurface({
