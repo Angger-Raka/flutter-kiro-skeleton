@@ -370,8 +370,10 @@ List<String> _noEaseInOrHeavyWeight(String rel, String src) {
   return out;
 }
 
-/// Material controls and ink widgets. `lib/app` draws interaction with
-/// `Pressable` and `TactileSurface` instead (Req 21.7).
+/// Material controls, visual widgets, and ink widgets. `lib/app`,
+/// `core/widgets`, `core/layout`, and `lib/features` draw interaction and
+/// surfaces with `Pressable` and `TactileSurface` instead (Req 21.7, 2.2).
+/// `Tooltip` stays allowed (infrastructure).
 const _materialControls = [
   'SegmentedButton',
   'ElevatedButton',
@@ -392,33 +394,44 @@ const _materialControls = [
   'ActionChip',
   'ChoiceChip',
   'FilterChip',
+  'Card',
+  'ListTile',
+  'AlertDialog',
+  'Dialog',
+  'SnackBar',
+  'PopupMenuButton',
+  'DropdownButton',
+  'showDialog',
+  'showModalBottomSheet',
 ];
 
 final _materialControl = RegExp('\\b(?:${_materialControls.join('|')})\\b');
 
-List<String> _noMaterialButtonsInApp(String rel, String src) {
-  if (!_under(rel, 'app')) return [];
+const _materialScanDirs = ['app', 'core/widgets', 'core/layout', 'features'];
+
+List<String> _noMaterialControls(String rel, String src) {
+  if (!_materialScanDirs.any((d) => _under(rel, d))) return [];
   final m = _materialControl.firstMatch(_code(src));
-  return m != null ? ['$rel: Material control ${m[0]} in lib/app'] : [];
+  return m != null ? ['$rel: Material control ${m[0]} in lib/$rel'] : [];
 }
 
-const _reservedNames = [
-  'AdaptiveScaffold',
-  'AdaptiveBuilder',
-  'PageColumn',
-  'AdaptiveGrid',
-  'ActionGroup',
-];
+/// Files that may use a `Scaffold`. `AdaptiveScaffold` uses it as
+/// infrastructure under the shell. `app/router/app_shell.dart` is a dated
+/// exception: it still holds a `Scaffold` until task H5 replaces it, and task
+/// Z2 removes this entry and asserts that none is left.
+const _scaffoldFiles = {
+  'core/layout/adaptive_scaffold.dart',
+  'app/router/app_shell.dart',
+};
 
-List<String> _noReservedDeclarations(String rel, String src) {
-  final code = _stripComments(src);
-  return [
-    for (final n in _reservedNames)
-      if (RegExp(
-        '(?:class|enum|mixin|extension\\s+type|typedef)\\s+$n\\b',
-      ).hasMatch(code))
-        '$rel: declares reserved name $n',
-  ];
+final _scaffoldUse = RegExp(r'\bScaffold\b');
+
+List<String> _scaffoldOnlyInAdaptiveScaffold(String rel, String src) {
+  if (!_materialScanDirs.any((d) => _under(rel, d))) return [];
+  if (_scaffoldFiles.contains(rel)) return [];
+  return _scaffoldUse.hasMatch(_code(src))
+      ? ['$rel: Scaffold outside core/layout/adaptive_scaffold.dart']
+      : [];
 }
 
 final _checks = <String, _Check>{
@@ -432,9 +445,9 @@ final _checks = <String, _Check>{
       _noRawTokensOutsideTheme,
   'no Curves.easeIn*, no FontWeight 600+ outside theme (17.9, 18.7)':
       _noEaseInOrHeavyWeight,
-  'no Material controls or ink widgets in lib/app (21.7)':
-      _noMaterialButtonsInApp,
-  'no reserved layout widget declared (20.6)': _noReservedDeclarations,
+  'no Material controls or ink widgets in app, core widgets, features (2.2)':
+      _noMaterialControls,
+  'Scaffold only in AdaptiveScaffold (2.3)': _scaffoldOnlyInAdaptiveScaffold,
 };
 
 // ---------------------------------------------------------------------------
@@ -634,28 +647,91 @@ void main() {
       passes(_noEaseInOrHeavyWeight, 'core/theme/x.dart', 'FontWeight.w700');
     });
 
-    test('Material buttons and reserved names', () {
-      fails(_noMaterialButtonsInApp, 'app/x.dart', 'TextButton(a);');
+    test('Material controls', () {
+      fails(_noMaterialControls, 'app/x.dart', 'TextButton(a);');
       for (final s in [
         'FilledButton(onPressed: f, child: c)',
         'IconButton(onPressed: f, icon: i)',
         'InkWell(onTap: f, child: c)',
         'Switch(value: v, onChanged: f)',
+        'Card(child: c)',
+        'ListTile(title: t)',
+        'AlertDialog(title: t)',
+        'Dialog(child: c)',
+        'SnackBar(content: c)',
+        'PopupMenuButton(itemBuilder: b)',
+        'DropdownButton(items: i)',
+        'showDialog(context: c, builder: b)',
+        'showModalBottomSheet(context: c, builder: b)',
       ]) {
-        fails(_noMaterialButtonsInApp, 'app/x.dart', s);
+        for (final dir in [
+          'app',
+          'core/widgets',
+          'core/layout',
+          'features/a/presentation',
+        ]) {
+          fails(_noMaterialControls, '$dir/x.dart', s);
+        }
       }
       passes(
-        _noMaterialButtonsInApp,
+        _noMaterialControls,
         'app/x.dart',
         'final t = FilledButtonThemeData(); // InkWell',
       );
-      passes(_noMaterialButtonsInApp, 'core/x.dart', 'TextButton(a);');
-      fails(
-        _noReservedDeclarations,
-        'core/x.dart',
-        'class AdaptiveScaffold extends StatelessWidget {}',
+      passes(_noMaterialControls, 'core/x.dart', 'TextButton(a);');
+      passes(_noMaterialControls, 'core/theme/x.dart', 'Card(child: c)');
+      passes(_noMaterialControls, 'core/widgets/x.dart', 'class AppCard {}');
+      passes(
+        _noMaterialControls,
+        'core/widgets/x.dart',
+        'Tooltip(message: m, child: c)',
       );
-      passes(_noReservedDeclarations, 'core/x.dart', 'class Other {}');
+      passes(_noMaterialControls, 'core/widgets/x.dart', '// showDialog(');
+    });
+
+    test('Scaffold', () {
+      fails(
+        _scaffoldOnlyInAdaptiveScaffold,
+        'core/widgets/x.dart',
+        'Scaffold(',
+      );
+      fails(_scaffoldOnlyInAdaptiveScaffold, 'features/a/x.dart', 'Scaffold(');
+      fails(_scaffoldOnlyInAdaptiveScaffold, 'app/x.dart', 'Scaffold(body: b)');
+      passes(
+        _scaffoldOnlyInAdaptiveScaffold,
+        'core/layout/adaptive_scaffold.dart',
+        'Scaffold(body: b)',
+      );
+      // Dated exception until H5 (removed by Z2).
+      passes(
+        _scaffoldOnlyInAdaptiveScaffold,
+        'app/router/app_shell.dart',
+        'Scaffold(body: b)',
+      );
+      passes(
+        _scaffoldOnlyInAdaptiveScaffold,
+        'core/widgets/x.dart',
+        'class AdaptiveScaffold {}',
+      );
+    });
+
+    test('the five layout names are no longer reserved', () {
+      for (final n in [
+        'AdaptiveScaffold',
+        'AdaptiveBuilder',
+        'PageColumn',
+        'AdaptiveGrid',
+        'ActionGroup',
+      ]) {
+        final snake = n
+            .replaceAllMapped(RegExp('(?<=[a-z])[A-Z]'), (m) => '_${m[0]}')
+            .toLowerCase();
+        passes(
+          _typeFileRules,
+          'core/layout/$snake.dart',
+          'class $n extends StatelessWidget {}',
+        );
+      }
     });
 
     test('stale allowlist entries are reported', () {
