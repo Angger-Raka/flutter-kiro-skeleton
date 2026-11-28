@@ -141,6 +141,8 @@ void main() {
     late Directory temp;
     late Directory repo;
     late Directory out;
+    final calls = <List<String>>[];
+    var runnerExit = 0;
 
     String read(String path) =>
         File('${out.path}/shop/$path').readAsStringSync();
@@ -152,15 +154,116 @@ void main() {
       writeFixtureSkeleton(Directory('${repo.path}/skeleton'));
     });
     tearDown(() => temp.deleteSync(recursive: true));
+    setUp(() {
+      calls.clear();
+      runnerExit = 0;
+    });
+
+    /// Records the call and writes a fresh folder for each platform, with an
+    /// entitlements file that lacks the network entry, like `flutter create`.
+    Future<int> fakeRunner(
+      String executable,
+      List<String> arguments, {
+      String? workingDirectory,
+    }) async {
+      calls.add([executable, ...arguments]);
+      final platforms = arguments
+          .firstWhere((a) => a.startsWith('--platforms='))
+          .substring('--platforms='.length)
+          .split(',');
+      for (final platform in platforms) {
+        final dir = Directory('${arguments.last}/$platform')
+          ..createSync(recursive: true);
+        if (platform == 'macos') {
+          File('${dir.path}/Runner/Release.entitlements')
+            ..createSync(recursive: true)
+            ..writeAsStringSync('<dict>\n</dict>\n');
+        }
+      }
+      return runnerExit;
+    }
 
     Future<int> run(List<String> args) => runCreateApp(
       args,
       repoRoot: repo,
+      runner: fakeRunner,
       out: StringBuffer(),
       err: StringBuffer(),
     );
 
+    test(
+      'a missing pattern runs flutter create and keeps permissions',
+      () async {
+        final code = await run([
+          'shop',
+          '--org',
+          'com.acme',
+          '--out',
+          out.path,
+        ]);
+        expect(code, 0);
+        expect(calls, hasLength(1));
+        expect(calls.single.sublist(0, 6), [
+          'flutter',
+          'create',
+          '--org',
+          'com.acme',
+          '--project-name',
+          'shop',
+        ]);
+        expect(calls.single[6], '--platforms=ios,macos,linux,windows');
+        expect(
+          read('macos/Runner/Release.entitlements'),
+          contains('com.apple.security.network.client'),
+        );
+        expect(
+          read('android/app/src/main/AndroidManifest.xml'),
+          contains('android.permission.INTERNET'),
+        );
+      },
+    );
+
+    test('a failing flutter create exits 1', () async {
+      runnerExit = 1;
+      expect(await run(['shop', '--out', out.path]), 1);
+    });
+
+    test(
+      'an app that matches every pattern never calls flutter create',
+      () async {
+        writeFixtureSkeleton(
+          Directory('${repo.path}/skeleton'),
+          complete: true,
+        );
+        expect(await run(['shop', '--out', out.path]), 0);
+        expect(calls, isEmpty);
+      },
+    );
+
+    test('templates are reset when present and skipped when absent', () async {
+      final skeleton = Directory('${repo.path}/skeleton');
+      expect(await run(['shop', '--out', out.path]), 0);
+      expect(File('${out.path}/shop/api/openapi.yaml').existsSync(), isFalse);
+      File('${skeleton.path}/api/openapi.yaml')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('old');
+      File('${skeleton.path}/.kiro/steering/product.md')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('old');
+      expect(await run(['shop3', '--out', out.path]), 0);
+      expect(
+        File('${out.path}/shop3/api/openapi.yaml').readAsStringSync(),
+        startsWith('openapi:'),
+      );
+      expect(
+        File('${out.path}/shop3/.kiro/steering/product.md').readAsStringSync(),
+        startsWith('# Product'),
+      );
+      expect(File('${out.path}/shop3/api/api_map.yaml').existsSync(), isFalse);
+    });
+
     test('copies the skeleton and sets the identifiers', () async {
+      writeFixtureSkeleton(Directory('${repo.path}/skeleton'), complete: true);
       final code = await run([
         'shop',
         '--org',
@@ -225,10 +328,30 @@ void main() {
 }
 
 /// A small skeleton with one file for each rule that J2 checks.
-void writeFixtureSkeleton(Directory root) {
+///
+/// With [complete], the Apple, Linux and Windows files that have rules exist
+/// too, so no platform needs the `flutter create` fallback.
+void writeFixtureSkeleton(Directory root, {bool complete = false}) {
   void put(String path, String text) => File('${root.path}/$path')
     ..createSync(recursive: true)
     ..writeAsStringSync(text);
+  if (complete) {
+    const bundle = 'PRODUCT_BUNDLE_IDENTIFIER = dev.angga.skeleton;\n';
+    put('ios/Runner.xcodeproj/project.pbxproj', bundle);
+    put('ios/Runner/Info.plist', '<string>Skeleton</string>\n');
+    put(
+      'macos/Runner.xcodeproj/project.pbxproj',
+      '$bundle"skeleton.app"\n"\$(X)/skeleton"\n',
+    );
+    put(
+      'macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme',
+      'skeleton.app\n',
+    );
+    put('macos/Runner/Info.plist', '<string>Skeleton</string>\n');
+    put('linux/runner/my_application.cc', '"Skeleton"\n');
+    put('windows/runner/main.cpp', 'L"Skeleton"\n');
+    put('windows/runner/Runner.rc', '"Skeleton" "skeleton" "skeleton.exe"\n');
+  }
   put('pubspec.yaml', 'name: skeleton\n');
   put('lib/main.dart', "import 'package:skeleton/a.dart';\n");
   put('build/x.txt', 'generated');
@@ -278,5 +401,10 @@ void writeFixtureSkeleton(Directory root) {
     'project(skeleton LANGUAGES CXX)\nset(BINARY_NAME "skeleton")\n',
   );
   put('web/manifest.json', '{"name": "Skeleton", "short_name": "Skeleton"}\n');
-  put('web/index.html', '<title>Skeleton</title>\n');
+  put(
+    'web/index.html',
+    '<title>Skeleton</title>\n'
+        '<meta property="og:title" content="Skeleton">\n'
+        '<meta name="apple-mobile-web-app-title" content="Skeleton">\n',
+  );
 }

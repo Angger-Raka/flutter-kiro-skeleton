@@ -6,6 +6,8 @@ library;
 
 import 'dart:io';
 
+import 'process_runner.dart';
+
 /// The names a new app gets.
 class AppIds {
   const AppIds({
@@ -312,6 +314,56 @@ List<String> applyPlatformIds(Directory app, AppIds ids) {
   }
   moveMainActivity(app, ids);
   return platformFolders.where(missing.contains).toList();
+}
+
+/// Replaces the folders of [platforms] in [app] with fresh ones from
+/// `flutter create` (requirement 16.6), then re-applies the permission and
+/// entitlement edits. Returns false when `flutter create` fails.
+///
+/// shortcut: the fresh folder has Flutter's default icons and labels, not the
+/// skeleton's. Upgrade by re-running the platform rules on it if that matters.
+Future<bool> flutterCreateFallback(
+  Directory app,
+  AppIds ids,
+  List<String> platforms,
+  ProcessRunner runner,
+) async {
+  final temp = Directory.systemTemp.createTempSync('create_app_fallback');
+  try {
+    final code = await runner('flutter', [
+      'create',
+      '--org',
+      ids.org,
+      '--project-name',
+      ids.name,
+      '--platforms=${platforms.join(',')}',
+      temp.path,
+    ]);
+    if (code != 0) return false;
+    for (final platform in platforms) {
+      final fresh = Directory('${temp.path}/$platform');
+      if (!fresh.existsSync()) continue;
+      final old = Directory('${app.path}/$platform');
+      if (old.existsSync()) old.deleteSync(recursive: true);
+      _copyTree(fresh, old);
+    }
+    applyNetworkAccess(app);
+    return true;
+  } finally {
+    temp.deleteSync(recursive: true);
+  }
+}
+
+void _copyTree(Directory from, Directory to) {
+  to.createSync(recursive: true);
+  for (final entity in from.listSync(followLinks: false)) {
+    final base = entity.uri.pathSegments.where((s) => s.isNotEmpty).last;
+    if (entity is Directory) {
+      _copyTree(entity, Directory('${to.path}/$base'));
+    } else if (entity is File) {
+      entity.copySync('${to.path}/$base');
+    }
+  }
 }
 
 /// Rewrites the web index test in the copy, when it exists.

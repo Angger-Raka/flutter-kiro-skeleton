@@ -10,6 +10,7 @@ import 'dart:io';
 import 'src/create_app_core.dart';
 import 'src/create_app_platform.dart';
 import 'src/process_runner.dart';
+import 'src/templates.dart';
 
 const _usage = '''
 Usage: dart run tool/create_app.dart <package_name> [options]
@@ -136,10 +137,15 @@ Future<int> runCreateApp(
   final missing = applyPlatformIds(target, ids);
   if (missing.isNotEmpty) {
     stderrSink.writeln(
-      'create_app: pattern missing in: ${missing.join(', ')} '
-      '(flutter create fallback is not wired yet).',
+      'create_app: pattern missing in: ${missing.join(', ')}. '
+      'Using flutter create for those platforms.',
     );
+    if (!await flutterCreateFallback(target, ids, missing, runner)) {
+      stderrSink.writeln('create_app: flutter create failed.');
+      return 1;
+    }
   }
+  resetTemplates(target);
   final problems = networkAccessProblems(target);
   if (problems.isNotEmpty) {
     stderrSink.writeln('create_app: missing network access: $problems');
