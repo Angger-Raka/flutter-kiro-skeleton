@@ -123,7 +123,7 @@ A small private mixin is not introduced. Each widget does the same five things, 
    (Req 5.1). Where a role needs another fill or shadow, use a `DecoratedBox` as D3 says.
 4. When `context.reduceMotion` is true, use `Duration.zero` for travel, scale, and blur, and a 150 ms crossfade
    (`AppMotion.d150`) where content appears or leaves. The press scale is kept.
-5. Use `Icon(LucideIcons.xxx300)` from `lucide_icons_flutter` for icons, sized from a token.
+5. Use `Icon(LucideIcons300.xxx)` (import `package:lucide_icons_flutter/lucide_icons_300.dart`) for icons, sized from a token.
 
 Text uses `context.text.body`, `.label`, `.meta`, `.field`, `.section`, `.title` as the existing `AppTypography`
 exposes them, with `maxLines`, `overflow: TextOverflow.ellipsis`, and no fixed height on text containers (Req 5.6,
@@ -251,7 +251,7 @@ Selected state is exposed through `Semantics(selected: true, inMutuallyExclusive
 class ThemeModeSwitch extends StatelessWidget { ThemeModeSwitch({}); }
 ```
 Reads `AppSettingsCubit` through `BlocBuilder`, renders `AppSegmented<AppThemeMode>(pageLevel: true)` with System,
-Light, Dark and icons (`LucideIcons.monitor300`, `.sun300`, `.moon300`), and calls `setThemeMode`. Persistence is
+Light, Dark and icons (`LucideIcons300.monitor`, `.sun`, `.moon`), and calls `setThemeMode`. Persistence is
 already done by the cubit (`AppSettingsCubit` saves through `KeyValueStore`), so Req 4.8 is covered by a cubit-level
 restart test in task D4 (create a second cubit on the same in-memory store and assert the mode).
 
